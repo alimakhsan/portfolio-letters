@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ahmad Alim Akhsan · Product Designer</title>
+<meta name="description" content="Ahmad Alim Akhsan (Alim) — Senior Product Designer. Portfolio in letters.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&display=swap" rel="stylesheet">
+
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  :root,
+  html[data-theme="light"] {
+    --bg:#f3f1ec; --paper:#fbfaf7; --card:#ffffff; --border:#e3e0d8;
+    --text:#1a1a18; --text2:#6f6d66; --ink2:#3a392f; --muted:#9a988f;
+    --faint:#bdbbb1; --divider:#ece9e1; --accent:#6366f1; --rule:#d9d6cd;
+    --scene-filter:saturate(1.02);
+  }
+  html[data-theme="dark"] {
+    --bg:#0e0e0c; --paper:#161613; --card:#17171c; --border:#2a2a26;
+    --text:#f3f2ec; --text2:#a4a299; --ink2:#cfcdc2; --muted:#7c7a71;
+    --faint:#56564f; --divider:#242420; --accent:#8b8df0; --rule:#2c2c27;
+    --scene-filter:brightness(.46) saturate(.82) contrast(1.05);
+  }
+
+  body {
+    font-family: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    background: var(--bg);
+    color: var(--text);
+    transition: background-color .25s ease, color .25s ease;
+  }
+  ::selection { background: rgba(99,102,241,.22); }
+
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+  a:focus-visible, button:focus-visible,
+  [role="tab"]:focus-visible, [role="tabpanel"]:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px;
+  }
+  @keyframes letterIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ---- page shell ---- */
+  .page {
+    position: relative; min-height: 100vh;
+    background: var(--bg); color: var(--text);
+    padding: 0 0 clamp(220px, 40vh, 440px);
+    overflow: hidden;
+  }
+  .scene {
+    position: fixed; left: 0; right: 0; bottom: 0;
+    height: min(82vh, 820px); z-index: 0; pointer-events: none;
+    background-size: cover; background-position: center bottom;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 36%);
+            mask-image: linear-gradient(to bottom, transparent 0%, #000 36%);
+    filter: var(--scene-filter);
+  }
+  .main {
+    position: relative; z-index: 1;
+    max-width: 940px; margin: 0 auto;
+    padding: clamp(30px, 6vw, 64px) clamp(20px, 5vw, 36px) 0;
+  }
+
+  /* ---- tabs ---- */
+  .tablist {
+    display: flex; align-items: stretch; gap: 0;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: clamp(26px, 4vw, 44px);
+  }
+  .tab {
+    position: relative; display: flex; align-items: center;
+    flex: 1 1 0; padding: 16px 4px 15px; cursor: pointer; margin-bottom: -1px;
+    background: none; border: none; font-family: inherit; text-align: left;
+  }
+  .tab-label {
+    font-size: 15px; letter-spacing: 0.01em; white-space: nowrap;
+    font-weight: 500; color: var(--muted);
+  }
+  .tab[aria-selected="true"] .tab-label { font-weight: 600; color: var(--text); }
+  .tab-underline {
+    position: absolute; left: 0; right: 0; bottom: -1px;
+    height: 2px; background: var(--accent); display: none;
+  }
+  .tab[aria-selected="true"] .tab-underline { display: block; }
+
+  /* ---- letter sheet ---- */
+  .sheet {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 3px;
+    box-shadow: 0 1px 2px rgba(20,18,10,.04), 0 22px 50px -28px rgba(20,18,10,.28);
+    padding: clamp(30px, 5.5vw, 68px) clamp(26px, 6vw, 86px) clamp(34px, 5vw, 60px);
+    position: relative; overflow: hidden;
+  }
+  .meta {
+    display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    padding-bottom: 26px; margin-bottom: 8px;
+    border-bottom: 1px solid var(--divider); flex-wrap: wrap;
+  }
+  .meta-place { font-size: 14px; font-weight: 500; letter-spacing: 0.01em; color: var(--muted); }
+  .meta-no {
+    font-size: 14px; font-weight: 600; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--accent);
+  }
+
+  .body { max-width: 640px; }
+
+  .salutation {
+    font-weight: 600; font-size: clamp(23px, 4vw, 30px); line-height: 1.18;
+    letter-spacing: -0.02em; color: var(--text); margin: 22px 0 18px;
+  }
+  .para { font-size: 17px; line-height: 1.72; color: var(--ink2); margin: 16px 0 0; }
+  .para.first { margin: 0; }
+  .para a, .body a.inline-link {
+    color: var(--accent); text-decoration: none; transition: opacity .15s;
+  }
+  .para a:hover, .body a.inline-link:hover { opacity: .68; }
+
+  .quote {
+    margin: 30px 0; padding: 4px 0 4px 22px; border-left: 2px solid var(--accent);
+  }
+  .quote span {
+    font-weight: 500; font-size: clamp(19px, 3vw, 23px); line-height: 1.45;
+    color: var(--text); letter-spacing: -0.01em;
+  }
+
+  .sign { margin-top: 34px; }
+  .sign-off { font-size: 17px; font-weight: 400; line-height: 1.72; color: var(--ink2); }
+  .sign-row { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
+  .sign-avatar {
+    width: 42px; height: 42px; border-radius: 50%; object-fit: cover;
+    flex: none; border: 1px solid var(--border);
+  }
+  .sign-name { font-weight: 700; font-size: 24px; line-height: 1; letter-spacing: -0.01em; color: var(--text); }
+  .sign-role { font-size: 14px; color: var(--muted); margin-top: 4px; }
+
+  .contacts {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--divider);
+  }
+  .contacts a {
+    display: inline-flex; align-items: center; line-height: 1;
+    font-size: 14px; font-weight: 500; color: var(--text2); text-decoration: none;
+    padding: 10px 14px; border: 1px solid var(--border); border-radius: 999px;
+    background: var(--card); white-space: nowrap;
+    transition: color .15s, border-color .15s;
+  }
+  .contacts a:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ---- at a glance ---- */
+  .glance { margin-top: 18px; padding-top: 22px; border-top: 1px solid var(--divider); }
+  .glance-title {
+    font-size: 14px; font-weight: 600; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 16px;
+  }
+  .glance-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 18px 24px;
+  }
+  .glance-link {
+    display: block; text-decoration: none; color: var(--text);
+    border-radius: 7px; margin: -8px -10px; padding: 8px 10px;
+    transition: background-color .15s, color .15s;
+  }
+  .glance-link:hover { background: var(--divider); color: var(--accent); }
+  .glance-v {
+    font-weight: 600; font-size: 20px; line-height: 1.1; letter-spacing: -0.01em;
+    color: var(--text);
+  }
+  .glance-link .glance-v {
+    display: inline-flex; align-items: center; gap: 5px; color: inherit;
+  }
+  .glance-arrow { font-size: 13px; opacity: .55; }
+  .glance-k { font-size: 14px; color: var(--text2); margin-top: 5px; line-height: 1.4; }
+
+  /* ---- footer / theme toggle ---- */
+  .footer {
+    display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--divider);
+  }
+  .copyright { font-size: 14px; font-weight: 400; color: var(--muted); white-space: nowrap; }
+  .theme-toggle {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: inherit; font-size: 14px; font-weight: 500; letter-spacing: 0.01em;
+    color: var(--muted); background: transparent;
+    border: 1px solid var(--border); border-radius: 999px; padding: 8px 15px;
+    cursor: pointer; transition: color .15s, border-color .15s;
+  }
+  .theme-toggle:hover { color: var(--accent); border-color: var(--accent); }
+</style>
+</head>
+<body>
+  <div class="page">
+    <h1 class="sr-only">Ahmad Alim Akhsan, Senior Product Designer. Portfolio in letters.</h1>
+
+    <!-- per-role landscape photo, behind the letter, theme-aware -->
+    <div class="scene" id="scene" aria-hidden="true"></div>
+
+    <main class="main">
+      <div class="tablist" role="tablist" aria-label="Choose who you are" id="tablist"></div>
+
+      <article class="sheet" id="letter-panel" role="tabpanel" tabindex="0">
+        <div class="meta">
+          <span class="meta-place" id="meta-place"></span>
+          <span class="meta-no" id="meta-no"></span>
+        </div>
+
+        <div class="body">
+          <div class="salutation" id="salutation"></div>
+          <p class="para first" id="first-para"></p>
+
+          <blockquote class="quote"><span id="quote"></span></blockquote>
+
+          <div id="rest-paras"></div>
+
+          <div class="sign">
+            <div class="sign-off" id="sign-off"></div>
+            <div class="sign-row">
+              <img class="sign-avatar"
+                   src="https://framerusercontent.com/images/BmzGMZdgIldCI9IgBtMfvSAXkE.jpg?width=120&height=120"
+                   alt="Ahmad Alim Akhsan">
+              <div>
+                <div class="sign-name">Alim</div>
+                <div class="sign-role">Ahmad Alim Akhsan · Sr. Product Designer</div>
+              </div>
+            </div>
+
+            <div class="contacts" id="contacts"></div>
+          </div>
+        </div>
+
+        <div class="glance" id="glance">
+          <div class="glance-title">At a glance</div>
+          <div class="glance-grid" id="glance-grid"></div>
+        </div>
+
+        <div class="footer">
+          <span class="copyright">© 2026 Ahmad Alim Akhsan</span>
+          <button class="theme-toggle" id="theme-toggle" type="button">
+            <span aria-hidden="true" id="theme-icon"></span>
+            <span id="theme-name"></span>
+          </button>
+        </div>
+      </article>
+    </main>
+  </div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---- config ----
+  var SHOW_GLANCE = true;   // prop: showGlance (default true)
+  var START_TAB   = "hr";   // prop: startTab  (default "hr")
+  var ACCENT_OVERRIDE = null; // prop: accent   (default null)
+
+  var ORDER = ["hr", "leads", "peers"];
+
+  var SCENES = {
+    hr:    "https://images.unsplash.com/photo-1454496522488-7a8e488e8606?auto=format&fit=crop&w=2000&q=80",
+    leads: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=2000&q=80",
+    peers: "https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?auto=format&fit=crop&w=2000&q=80"
+  };
+
+  var ROLE_ACCENT = {
+    light: { hr: "#3f6f9f", leads: "#b07d24", peers: "#5e8c43" },
+    dark:  { hr: "#7fa9d6", leads: "#dcab4c", peers: "#92c06d" }
+  };
+
+  var LINK_TERMS = [
+    { term: "SmartSari", href: "https://www.techinasia.com/bukalapak-quietly-enters-philippines-mitra-service" },
+    { term: "GovTech",   href: "https://inadigital.go.id/" },
+    { term: "IDDS",      href: "https://design.inadigital.go.id/" },
+    { term: "Bukalapak", href: "https://brand.bukalapak.design/" }
+  ];
+
+  var CONTACTS = [
+    { label: "Email", href: "mailto:alim.akhsan@gmail.com" },
+    { label: "WhatsApp · +62 878 7086 7025", href: "https://wa.me/6287870867025" },
+    { label: "LinkedIn", href: "https://www.linkedin.com/in/alimakhsan" },
+    { label: "Résumé (PDF)", href: "https://drive.google.com/file/d/1hvki1yPYHHqE_phPsfSLPbjBhx7sFW53/view" }
+  ];
+
+  var LETTERS = {
+    hr: {
+      label: "For HR", no: "No. 01", place: "Bekasi, Indonesia", year: "2026",
+      salutation: "Dear Hiring Manager,",
+      first: "Thank you for opening this. My name is Ahmad Alim Akhsan (Alim), a senior product designer with eight years of shipped work behind me, and I'd like to make your shortlist an easy decision. The short version: I join teams, I grow inside them, and I leave numbers behind.",
+      quote: "I join teams, I grow inside them, and I leave numbers behind.",
+      rest: [
+        "I spent seven years at Bukalapak, one of Indonesia's largest marketplaces, on the platform serving millions of small store owners. I was promoted three times, from associate to senior, and the work earned its keep: a subscription model that unlocked $16K in new monthly revenue, an inventory tool that lifted stocktaking accuracy to 98.5% and prevented roughly $34K a month in losses, and an acquisition channel that converted ten times better at under a dollar per user.",
+        "Today I'm a Senior Product Designer at GovTech Indonesia, designing public services for a national audience on the country's government design system. I work remotely, I document as I go, and I'm comfortable being the person who turns ambiguity into a plan that ships.",
+        "I'm open to full-time and freelance work from January 2026. My résumé, references, and case studies are a click away, and I'd gladly walk you through any of it on a call."
+      ],
+      signOff: "Warm regards,",
+      glance: [
+        { v: "8+ years", k: "Designing & shipping products" },
+        { v: "3 promotions", k: "In seven years at Bukalapak" },
+        { v: "~20M users", k: "Reached across the platform" },
+        { v: "Jan 2026", k: "Available · remote, Bekasi ID" }
+      ]
+    },
+    leads: {
+      label: "For Design Leads", no: "No. 02", place: "Bekasi, Indonesia", year: "2026",
+      salutation: "Dear Design Lead,",
+      first: "If you're reading this, you probably care less about my metrics and more about how I think, so let me show my hand. I design for scale, and scale punishes anything decorative. My instinct is to find the smallest system that solves the most cases, then defend it.",
+      quote: "Find the smallest system that solves the most cases, then defend it.",
+      rest: [
+        "At Bukalapak I led the design of Mitra Plus+, packaging value across 20+ seller products into a single subscription, which meant reconciling a dozen teams' definitions of “premium” into one coherent guideline. On SmartSari I was the design founder for our Southeast Asia expansion, growing the team from three to ten and owning the 0→1 work that took the product into the Philippines. Now I work inside IDDS, Indonesia's government design system, where consistency isn't a preference; it's the product.",
+        "I review by asking questions, not by redlining. The recommendation I'm proudest of came from a designer I mentored: that I spark discussion with respectful questions that move things forward without making anyone defensive. I'd rather raise the floor of a whole team than be the lone hero on a single screen.",
+        "And I stay close to the build. Years of front-end mean my handoffs survive contact with engineering, and I'll happily prototype in code when a Figma file can't answer the question."
+      ],
+      signOff: "Looking forward,",
+      glance: [
+        { v: "IDDS", k: "GovTech design system", href: "https://design.inadigital.go.id/" },
+        { v: "3 → 10", k: "Built & led a design team" },
+        { v: "20+ products", k: "Shipped across the org" },
+        { v: "Code-fluent", k: "Prototypes & handoff that hold" }
+      ]
+    },
+    peers: {
+      label: "For Peers", no: "No. 03", place: "Bekasi, Indonesia", year: "2026",
+      salutation: "Dear Fellow Designer,",
+      first: "No pitch here, just the real version. I started in 2017 at a tiny studio in Yogyakarta where the brief might be a logo on Monday and a SaaS dashboard on Thursday. I had no idea what I was doing, and it was the best thing that could have happened: I learned to be useful before I learned to be precious.",
+      quote: "I learned to be useful before I learned to be precious.",
+      rest: [
+        "The things I'm actually proud of rarely fit in a case study. Migrating sixty-plus designers to Figma, which somehow brought Figma's CEO to Indonesia and put me on a stage beside him. The late nights on the Philippines launch when half the information was missing and we shipped anyway. The mentoring sessions that taught me more than they taught the mentees.",
+        "These days I build HaloLagi on the side, a win-back tool for small local businesses, designed and shipped solo. I write when I need to think. I drink too much coffee, and carry a camera I keep forgetting to use well.",
+        "If you're early in this, or just stuck on something, my inbox is open. We're all figuring it out; some of us just hide it better."
+      ],
+      signOff: "Talk soon,",
+      glance: [
+        { v: "Est. 2017", k: "A studio in Yogyakarta" },
+        { v: "HaloLagi", k: "Side project, built solo", href: "https://halolagi.com" },
+        { v: "Writes & speaks", k: "On Medium, on stages", href: "https://medium.com/bukalapakproductdesign/design-process-in-reflection-fae78c483597" },
+        { v: "Coffee", k: "When the screen lets go" }
+      ]
+    }
+  };
+
+  // ---- state ----
+  var mqDark = window.matchMedia("(prefers-color-scheme: dark)");
+  var state = { tab: START_TAB, theme: "light" };
+
+  function read(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
+  function write(key, val) { try { localStorage.setItem(key, val); } catch (e) {} }
+
+  // ---- helpers ----
+  function currentAccent() {
+    if (ACCENT_OVERRIDE) return ACCENT_OVERRIDE;
+    var theme = state.theme === "dark" ? "dark" : "light";
+    var map = ROLE_ACCENT[theme] || ROLE_ACCENT.light;
+    return map[state.tab] || "#6366f1";
+  }
+
+  function applyTheme(t) { document.documentElement.setAttribute("data-theme", t); }
+  function applyAccent() {
+    document.documentElement.style.setProperty("--accent", currentAccent());
+  }
+
+  function setIdentity() {
+    document.title = "Ahmad Alim Akhsan · Product Designer";
+    var hex = currentAccent().replace("#", "%23");
+    var svg = "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>" +
+              "<rect width='64' height='64' rx='14' fill='" + hex + "'/>" +
+              "<text x='32' y='46' font-family='Georgia,serif' font-style='italic' font-size='42' " +
+              "fill='white' text-anchor='middle'>A</text></svg>";
+    var link = document.querySelector("link[rel='icon']");
+    if (!link) { link = document.createElement("link"); link.rel = "icon"; document.head.appendChild(link); }
+    link.type = "image/svg+xml";
+    link.href = svg;
+  }
+
+  // turn a paragraph string into a DOM fragment, linking the first occurrence
+  // of each known term once
+  function linkify(text) {
+    var parts = [{ type: "text", value: text }];
+    LINK_TERMS.forEach(function (kw) {
+      for (var i = 0; i < parts.length; i++) {
+        var p = parts[i];
+        if (p.type !== "text") continue;
+        var idx = p.value.indexOf(kw.term);
+        if (idx >= 0) {
+          var before = p.value.slice(0, idx);
+          var after = p.value.slice(idx + kw.term.length);
+          var repl = [];
+          if (before) repl.push({ type: "text", value: before });
+          repl.push({ type: "link", value: kw.term, href: kw.href });
+          if (after) repl.push({ type: "text", value: after });
+          parts.splice.apply(parts, [i, 1].concat(repl));
+          break;
+        }
+      }
+    });
+    var frag = document.createDocumentFragment();
+    parts.forEach(function (p) {
+      if (p.type === "link") {
+        var a = document.createElement("a");
+        a.className = "inline-link";
+        a.href = p.href; a.target = "_blank"; a.rel = "noopener";
+        a.textContent = p.value;
+        frag.appendChild(a);
+      } else {
+        frag.appendChild(document.createTextNode(p.value));
+      }
+    });
+    return frag;
+  }
+
+  // ---- render: tabs ----
+  function renderTabs() {
+    var list = document.getElementById("tablist");
+    list.innerHTML = "";
+    ORDER.forEach(function (id) {
+      var item = LETTERS[id];
+      var active = id === state.tab;
+
+      var tab = document.createElement("button");
+      tab.className = "tab";
+      tab.id = "ltab-" + id;
+      tab.type = "button";
+      tab.setAttribute("role", "tab");
+      tab.setAttribute("aria-selected", active ? "true" : "false");
+      tab.setAttribute("aria-controls", "letter-panel");
+      tab.tabIndex = active ? 0 : -1;
+
+      var label = document.createElement("span");
+      label.className = "tab-label";
+      label.textContent = item.label;
+      tab.appendChild(label);
+
+      var underline = document.createElement("div");
+      underline.className = "tab-underline";
+      tab.appendChild(underline);
+
+      tab.addEventListener("click", function () { selectTab(id); });
+      tab.addEventListener("keydown", function (e) { handleTabKey(e, id); });
+
+      list.appendChild(tab);
+    });
+  }
+
+  // ---- render: letter ----
+  function renderLetter() {
+    var L = LETTERS[state.tab];
+
+    document.getElementById("scene").style.backgroundImage = "url('" + SCENES[state.tab] + "')";
+
+    document.getElementById("meta-place").textContent = L.place;
+    document.getElementById("meta-no").textContent = L.no + " / " + L.label;
+    document.getElementById("salutation").textContent = L.salutation;
+
+    var first = document.getElementById("first-para");
+    first.innerHTML = "";
+    first.appendChild(linkify(L.first));
+
+    document.getElementById("quote").textContent = L.quote;
+
+    var rest = document.getElementById("rest-paras");
+    rest.innerHTML = "";
+    L.rest.forEach(function (t) {
+      var p = document.createElement("p");
+      p.className = "para";
+      p.appendChild(linkify(t));
+      rest.appendChild(p);
+    });
+
+    document.getElementById("sign-off").textContent = L.signOff;
+
+    renderContacts();
+    renderGlance(L);
+
+    document.getElementById("letter-panel")
+      .setAttribute("aria-labelledby", "ltab-" + state.tab);
+  }
+
+  function renderContacts() {
+    var box = document.getElementById("contacts");
+    box.innerHTML = "";
+    CONTACTS.forEach(function (c) {
+      var a = document.createElement("a");
+      a.href = c.href; a.target = "_blank"; a.rel = "noopener";
+      a.textContent = c.label;
+      box.appendChild(a);
+    });
+  }
+
+  function renderGlance(L) {
+    var wrap = document.getElementById("glance");
+    if (!SHOW_GLANCE) { wrap.style.display = "none"; return; }
+    wrap.style.display = "";
+
+    var grid = document.getElementById("glance-grid");
+    grid.innerHTML = "";
+    (L.glance || []).forEach(function (g) {
+      if (g.href) {
+        var a = document.createElement("a");
+        a.className = "glance-link";
+        a.href = g.href; a.target = "_blank"; a.rel = "noopener";
+
+        var v = document.createElement("div");
+        v.className = "glance-v";
+        v.appendChild(document.createTextNode(g.v));
+        var arrow = document.createElement("span");
+        arrow.className = "glance-arrow";
+        arrow.textContent = "↗";
+        v.appendChild(arrow);
+
+        var k = document.createElement("div");
+        k.className = "glance-k";
+        k.textContent = g.k;
+
+        a.appendChild(v); a.appendChild(k);
+        grid.appendChild(a);
+      } else {
+        var item = document.createElement("div");
+        var vv = document.createElement("div");
+        vv.className = "glance-v";
+        vv.textContent = g.v;
+        var kk = document.createElement("div");
+        kk.className = "glance-k";
+        kk.textContent = g.k;
+        item.appendChild(vv); item.appendChild(kk);
+        grid.appendChild(item);
+      }
+    });
+  }
+
+  function renderTheme() {
+    var dark = state.theme === "dark";
+    document.getElementById("theme-icon").textContent = dark ? "☀" : "☾";
+    document.getElementById("theme-name").textContent = dark ? "Dark" : "Light";
+    var label = dark ? "Switch to light theme" : "Switch to dark theme";
+    var btn = document.getElementById("theme-toggle");
+    btn.setAttribute("aria-label", label);
+    btn.setAttribute("title", label);
+  }
+
+  // ---- interaction ----
+  function selectTab(id, focusIt) {
+    if (!LETTERS[id]) return;
+    state.tab = id;
+    write("pf-letter-tab", id);
+    renderTabs();
+    renderLetter();
+    applyAccent();
+    setIdentity();
+    if (focusIt) {
+      var el = document.getElementById("ltab-" + id);
+      if (el && el.focus) el.focus();
+    }
+  }
+
+  function handleTabKey(e, id) {
+    var i = ORDER.indexOf(id);
+    var k = e.key;
+    if (k === "Enter" || k === " " || k === "Spacebar") { e.preventDefault(); selectTab(id); return; }
+    var next = null;
+    if (k === "ArrowRight" || k === "ArrowDown") next = ORDER[(i + 1) % ORDER.length];
+    else if (k === "ArrowLeft" || k === "ArrowUp") next = ORDER[(i - 1 + ORDER.length) % ORDER.length];
+    else if (k === "Home") next = ORDER[0];
+    else if (k === "End") next = ORDER[ORDER.length - 1];
+    if (next) { e.preventDefault(); selectTab(next, true); }
+  }
+
+  function toggleTheme() {
+    var t = state.theme === "dark" ? "light" : "dark";
+    state.theme = t;
+    applyTheme(t);
+    write("pf-theme-v2", t);
+    applyAccent();
+    setIdentity();
+    renderTheme();
+  }
+
+  // ---- init ----
+  function init() {
+    var stored = read("pf-theme-v2");
+    state.theme = stored || (mqDark.matches ? "dark" : "light");
+    applyTheme(state.theme);
+
+    var tab = START_TAB;
+    var storedTab = read("pf-letter-tab");
+    if (storedTab) tab = storedTab;
+    if (!LETTERS[tab]) tab = "hr";
+    state.tab = tab;
+
+    renderTabs();
+    renderLetter();
+    renderTheme();
+    applyAccent();
+    setIdentity();
+
+    document.getElementById("theme-toggle").addEventListener("click", toggleTheme);
+
+    // follow the device theme unless the user has set a manual override
+    var onScheme = function (e) {
+      if (!read("pf-theme-v2")) {
+        state.theme = e.matches ? "dark" : "light";
+        applyTheme(state.theme);
+        applyAccent();
+        setIdentity();
+        renderTheme();
+      }
+    };
+    try { mqDark.addEventListener("change", onScheme); }
+    catch (e) { mqDark.addListener(onScheme); }
+  }
+
+  if (document.readyState !== "loading") init();
+  else document.addEventListener("DOMContentLoaded", init);
+})();
+</script>
+</body>
+</html>
