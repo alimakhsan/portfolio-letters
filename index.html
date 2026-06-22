@@ -240,13 +240,14 @@
   }
   .archive a:hover { color: var(--accent); }
   .theme-toggle, .font-toggle {
-    display: inline-flex; align-items: center; gap: 8px;
-    font-family: inherit; font-size: 14px; font-weight: 500; letter-spacing: 0.01em;
+    display: inline-flex; align-items: center; justify-content: center; line-height: 0;
     color: var(--muted); background: transparent;
-    border: 1px solid var(--border); border-radius: 999px; padding: 8px 15px;
+    border: 1px solid var(--border); border-radius: 999px; padding: 9px;
     cursor: pointer; transition: color .15s, border-color .15s;
   }
   .theme-toggle:hover, .font-toggle:hover { color: var(--accent); border-color: var(--accent); }
+  .theme-toggle .ico, .font-toggle .ico { display: inline-flex; }
+  .theme-toggle svg, .font-toggle svg { width: 18px; height: 18px; display: block; }
 </style>
 </head>
 <body>
@@ -305,12 +306,10 @@
           </span>
           <div class="toggles">
             <button class="font-toggle" id="font-toggle" type="button">
-              <span aria-hidden="true">Aa</span>
-              <span id="font-name"></span>
+              <span class="ico" id="font-icon" aria-hidden="true"></span>
             </button>
             <button class="theme-toggle" id="theme-toggle" type="button">
-              <span aria-hidden="true" id="theme-icon"></span>
-              <span id="theme-name"></span>
+              <span class="ico" id="theme-icon" aria-hidden="true"></span>
             </button>
           </div>
         </div>
@@ -419,6 +418,21 @@
 
   var FONTS = ["sans", "mono", "serif"];
   var FONT_LABEL = { sans: "Sans", mono: "Mono", serif: "Serif" };
+  var FONT_ICON = { sans: "typography", mono: "code", serif: "book" };
+
+  // Tabler Icons (MIT) — inline so they inherit currentColor
+  var ICONS = {
+    sun: '<path d="M8 12a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"/><path d="M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"/>',
+    moon: '<path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008"/>',
+    typography: '<path d="M4 20l3 0"/><path d="M14 20l7 0"/><path d="M6.9 15l6.9 0"/><path d="M10.2 6.3l5.8 13.7"/><path d="M5 20l6 -16l2 0l7 16"/>',
+    code: '<path d="M7 8l-4 4l4 4"/><path d="M17 8l4 4l-4 4"/><path d="M14 4l-4 16"/>',
+    book: '<path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0"/><path d="M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0"/><path d="M3 6l0 13"/><path d="M12 6l0 13"/><path d="M21 6l0 13"/>'
+  };
+  function svgIcon(paths) {
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
+           'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' +
+           paths + '</svg>';
+  }
 
   function read(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
   function write(key, val) { try { localStorage.setItem(key, val); } catch (e) {} }
@@ -603,8 +617,7 @@
 
   function renderTheme() {
     var dark = state.theme === "dark";
-    document.getElementById("theme-icon").textContent = dark ? "☀" : "☾";
-    document.getElementById("theme-name").textContent = dark ? "Dark" : "Light";
+    document.getElementById("theme-icon").innerHTML = svgIcon(ICONS[dark ? "sun" : "moon"]);
     var label = dark ? "Switch to light theme" : "Switch to dark theme";
     var btn = document.getElementById("theme-toggle");
     btn.setAttribute("aria-label", label);
@@ -650,7 +663,7 @@
 
   function applyFont(f) { document.documentElement.setAttribute("data-font", f); }
   function renderFont() {
-    document.getElementById("font-name").textContent = FONT_LABEL[state.font];
+    document.getElementById("font-icon").innerHTML = svgIcon(ICONS[FONT_ICON[state.font]]);
     var btn = document.getElementById("font-toggle");
     var lbl = "Change typeface (now: " + FONT_LABEL[state.font] + ")";
     btn.setAttribute("aria-label", lbl);
