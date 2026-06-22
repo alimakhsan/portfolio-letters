@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ahmad Alim Akhsan · Product Designer</title>
-<meta name="description" content="Senior Product Designer with 8+ years shipping products — a portfolio written as letters, for HR, design leads, and peers.">
+<meta name="description" content="Senior Product Designer with 8+ years shipping products. A portfolio written as letters, for HR, design leads, and peers.">
 <link rel="canonical" href="https://ahmadalim.com/">
 
 <!-- favicon (photo) -->
@@ -16,22 +16,22 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Ahmad Alim Akhsan">
 <meta property="og:title" content="Ahmad Alim Akhsan · Senior Product Designer">
-<meta property="og:description" content="Senior Product Designer with 8+ years shipping products — a portfolio written as letters, for HR, design leads, and peers.">
+<meta property="og:description" content="Senior Product Designer with 8+ years shipping products. A portfolio written as letters, for HR, design leads, and peers.">
 <meta property="og:url" content="https://ahmadalim.com/">
 <meta property="og:image" content="https://ahmadalim.com/assets/og-image.jpg">
 <meta property="og:image:secure_url" content="https://ahmadalim.com/assets/og-image.jpg">
 <meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Ahmad Alim Akhsan — Senior Product Designer">
+<meta property="og:image:alt" content="Ahmad Alim Akhsan, Senior Product Designer">
 <meta property="og:locale" content="en_US">
 
 <!-- Twitter / X -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Ahmad Alim Akhsan · Senior Product Designer">
-<meta name="twitter:description" content="Senior Product Designer with 8+ years shipping products — a portfolio written as letters, for HR, design leads, and peers.">
+<meta name="twitter:description" content="Senior Product Designer with 8+ years shipping products. A portfolio written as letters, for HR, design leads, and peers.">
 <meta name="twitter:image" content="https://ahmadalim.com/assets/og-image.jpg">
-<meta name="twitter:image:alt" content="Ahmad Alim Akhsan — Senior Product Designer">
+<meta name="twitter:image:alt" content="Ahmad Alim Akhsan, Senior Product Designer">
 
 <!-- structured data (Google rich results / knowledge panel) -->
 <script type="application/ld+json">
@@ -155,7 +155,7 @@
   }
   .tab {
     position: relative; display: flex; align-items: center;
-    flex: 1 1 0; padding: 16px 4px 15px; cursor: pointer; margin-bottom: -1px;
+    flex: 1 1 0; min-width: 0; padding: 16px 4px 15px; cursor: pointer; margin-bottom: -1px;
     background: none; border: none; font-family: inherit; text-align: left;
   }
   .tab-label {
@@ -168,6 +168,10 @@
   @media (max-width: 600px) {
     .tab-label-full { display: none; }
     .tab-label-short { display: inline; }
+    /* four tabs now share the row, tighten + center so they fit small phones */
+    .tab { padding-left: 3px; padding-right: 3px; justify-content: center; text-align: center; }
+    .tab-label { font-size: 13px; letter-spacing: 0; }
+    html[data-font="mono"] .tab-label { font-size: 11.5px; }
   }
   .tab-underline {
     position: absolute; left: 0; right: 0; bottom: -1px;
@@ -186,11 +190,11 @@
   .sheet::before {
     content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
     border-radius: inherit;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    background-size: 180px 180px;
-    opacity: .12; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.78' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+    opacity: .2; mix-blend-mode: multiply;
   }
-  html[data-theme="dark"] .sheet::before { mix-blend-mode: screen; opacity: .08; }
+  html[data-theme="dark"] .sheet::before { mix-blend-mode: screen; opacity: .15; }
   .meta {
     display: flex; align-items: center; justify-content: space-between; gap: 14px;
     padding-bottom: 26px; margin-bottom: 8px;
@@ -341,6 +345,35 @@
   /* press feedback on chips */
   .contacts a:active { transform: scale(.96); }
 
+  /* back-to-top: sits in the empty space below the letter, over the scene */
+  .backtotop-wrap {
+    position: relative; z-index: 1;
+    display: flex; justify-content: center;
+    margin-top: clamp(30px, 5vw, 52px);
+    /* revealed once it scrolls into view (JS adds .is-visible) */
+    opacity: 0; transform: translateY(12px);
+    transition: opacity .55s cubic-bezier(.2,0,0,1), transform .55s cubic-bezier(.2,0,0,1);
+  }
+  .backtotop-wrap.is-visible { opacity: 1; transform: translateY(0); }
+  @media (prefers-reduced-motion: reduce) {
+    .backtotop-wrap { transition: none; transform: none; }
+  }
+  .back-to-top {
+    display: inline-flex; align-items: center; gap: 8px; line-height: 1;
+    font-family: inherit; font-size: 14px; font-weight: 500;
+    color: var(--chip-text); background: var(--chip-bg);
+    border: 1px solid var(--chip-border); border-radius: 999px;
+    padding: 11px 18px; cursor: pointer;
+    box-shadow: 0 1px 2px rgba(20,18,10,.04), 0 14px 30px -22px rgba(20,18,10,.4);
+    transition: color .15s, border-color .15s, background-color .15s, transform .12s ease;
+  }
+  .back-to-top:hover {
+    color: var(--accent); border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 9%, var(--chip-bg));
+  }
+  .back-to-top:active { transform: translateY(1px) scale(.97); }
+  .back-to-top svg { width: 16px; height: 16px; display: block; }
+
   /* staggered enter for the letter sections (replays on tab switch) */
   @media (prefers-reduced-motion: no-preference) {
     .intro .meta, .intro .body, .intro .contacts, .intro .glance {
@@ -418,6 +451,16 @@
           </div>
         </div>
       </article>
+
+      <div class="backtotop-wrap">
+        <button class="back-to-top" id="back-to-top" type="button" aria-label="Back to top">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <path d="M12 19l0 -14"/><path d="M6 11l6 -6"/><path d="M18 11l-6 -6"/>
+          </svg>
+          <span>Back to top</span>
+        </button>
+      </div>
     </main>
   </div>
 
@@ -430,18 +473,21 @@
   var START_TAB   = "hr";   // prop: startTab  (default "hr")
   var ACCENT_OVERRIDE = null; // prop: accent   (default null)
 
-  var ORDER = ["hr", "leads", "peers"];
-  var SHORT_LABEL = { leads: "For Leads" }; // shown on narrow screens to avoid tab collision
+  var ORDER = ["hr", "leads", "founders", "peers"];
+  // narrow screens drop the "For " framing to bare words so four tabs fit
+  // without collision or scrolling (desktop keeps the full "For …" labels)
+  var SHORT_LABEL = { hr: "HR", leads: "Leads", founders: "Founders", peers: "Peers" };
 
   var SCENES = {
-    hr:    "https://images.unsplash.com/photo-1454496522488-7a8e488e8606?auto=format&fit=crop&w=2000&q=80",
-    leads: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=2000&q=80",
-    peers: "https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?auto=format&fit=crop&w=2000&q=80"
+    hr:       "https://images.unsplash.com/photo-1454496522488-7a8e488e8606?auto=format&fit=crop&w=2000&q=80",
+    leads:    "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=2000&q=80",
+    founders: "https://images.unsplash.com/photo-1505765050516-f72dcac9c60e?auto=format&fit=crop&w=2000&q=80",
+    peers:    "https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?auto=format&fit=crop&w=2000&q=80"
   };
 
   var ROLE_ACCENT = {
-    light: { hr: "#3f6f9f", leads: "#b07d24", peers: "#5e8c43" },
-    dark:  { hr: "#7fa9d6", leads: "#dcab4c", peers: "#92c06d" }
+    light: { hr: "#3f6f9f", leads: "#b07d24", founders: "#1f7a78", peers: "#5e8c43" },
+    dark:  { hr: "#7fa9d6", leads: "#dcab4c", founders: "#4fb3b0", peers: "#92c06d" }
   };
 
   var LINK_TERMS = [
@@ -474,7 +520,7 @@
       ],
       signOff: "Warm regards,",
       glance: [
-        { v: "8+ years", k: "Designing & shipping products" },
+        { v: "8+ years", k: "Designing & shipping products", href: "/case-studies" },
         { v: "3 promotions", k: "In seven years at Bukalapak" },
         { v: "~20M users", k: "Reached across the platform" },
         { v: "Jan 2026", k: "Available · remote, Bekasi ID" }
@@ -493,13 +539,31 @@
       signOff: "Looking forward,",
       glance: [
         { v: "IDDS", k: "GovTech design system", href: "https://design.inadigital.go.id/" },
-        { v: "3 → 10", k: "Built & led a design team" },
+        { v: "3 → 10", k: "Built & led a design team", href: "https://alimakhsan.notion.site/Bring-Impact-In-Design-Leadership-Strategy-and-Collaboration-225bdef27bd681868c44ced4ae489a9a" },
         { v: "20+ products", k: "Shipped across the org" },
-        { v: "Code-fluent", k: "Prototypes & handoff that hold" }
+        { v: "Code-fluent", k: "Prototypes & handoff that hold", href: "https://github.com/alimakhsan" }
+      ]
+    },
+    founders: {
+      label: "For Founders", no: "No. 03", place: "Bekasi, Indonesia", year: "2026",
+      salutation: "Dear Founder,",
+      first: "You don't have months to find out whether an idea works. You have a runway, and I design for that constraint. My job is to help you validate the market, design the right thing, and put a testable prototype in real users' hands in days, not quarters, so your next round buys traction instead of guesswork.",
+      quote: "Validate the market, design the right thing, ship something testable in days.",
+      rest: [
+        "I've done the 0→1 work where the stakes are real. At SmartSari I was the design founder for our Southeast Asia expansion, taking the product from nothing into the Philippines and growing the team from three to ten. On the side I built and shipped HaloLagi, a win-back tool for small local businesses, solo from idea to live product. And seven years at Bukalapak taught me design only counts when it moves a number: a subscription model that unlocked $16K in new monthly revenue, an acquisition channel that converted ten times better at under a dollar per user.",
+        "Through my studio I now run focused design sprints for founders: a few intense days that turn a fuzzy vision into a clickable prototype you can put in front of customers and investors. One of those prototypes helped secure a $40K project; another became an MVP shipped from zero in under a month that brought in new partnerships. I've done this for 10+ founders, and the pattern holds: clarity first, then speed.",
+        "If you're weighing a build, I'd rather de-risk it with you before you spend the money. Tell me what you're trying to learn, and I'll tell you the fastest honest way to find out."
+      ],
+      signOff: "To the launch,",
+      glance: [
+        { v: "0 → 1", k: "Founding design, SE Asia launch" },
+        { v: "5-day sprints", k: "Vision → testable prototype", href: "https://alimdesign.framer.website/" },
+        { v: "$40K", k: "Won from one sprint prototype" },
+        { v: "10+ founders", k: "Trusted to de-risk launches" }
       ]
     },
     peers: {
-      label: "For Peers", no: "No. 03", place: "Bekasi, Indonesia", year: "2026",
+      label: "For Peers", no: "No. 04", place: "Bekasi, Indonesia", year: "2026",
       salutation: "Dear Fellow Designer,",
       first: "No pitch here, just the real version. I started in 2017 at a tiny studio in Yogyakarta where the brief might be a logo on Monday and a SaaS dashboard on Thursday. I had no idea what I was doing, and it was the best thing that could have happened: I learned to be useful before I learned to be precious.",
       quote: "I learned to be useful before I learned to be precious.",
@@ -513,7 +577,7 @@
         { v: "Est. 2017", k: "A studio in Yogyakarta" },
         { v: "HaloLagi", k: "Side project, built solo", href: "https://halolagi.com" },
         { v: "Writes & speaks", k: "On Medium, on stages", href: "https://medium.com/bukalapakproductdesign/design-process-in-reflection-fae78c483597" },
-        { v: "My Agency", k: "Independent design studio", href: "https://alimdesign.framer.website/" }
+        { v: "Community", k: "Templates on Figma", href: "https://www.figma.com/@alimakhsan" }
       ]
     }
   };
@@ -526,7 +590,7 @@
   var FONT_LABEL = { sans: "Sans", mono: "Mono", serif: "Serif" };
   var FONT_ICON = { sans: "typography", mono: "code", serif: "book" };
 
-  // Tabler Icons (MIT) — inline so they inherit currentColor
+  // Tabler Icons (MIT), inline so they inherit currentColor
   var ICONS = {
     sun: '<path d="M8 12a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"/><path d="M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"/>',
     moon: '<path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008"/>',
@@ -817,6 +881,27 @@
 
     document.getElementById("theme-toggle").addEventListener("click", toggleTheme);
     document.getElementById("font-toggle").addEventListener("click", cycleFont);
+
+    var backTop = document.getElementById("back-to-top");
+    if (backTop) backTop.addEventListener("click", function () {
+      var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+    });
+
+    // reveal the back-to-top once it scrolls into view (else show it outright)
+    var bttWrap = document.querySelector(".backtotop-wrap");
+    if (bttWrap) {
+      if ("IntersectionObserver" in window) {
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (en) {
+            if (en.isIntersecting) { bttWrap.classList.add("is-visible"); io.disconnect(); }
+          });
+        }, { threshold: 0.4 });
+        io.observe(bttWrap);
+      } else {
+        bttWrap.classList.add("is-visible");
+      }
+    }
 
     // follow the device theme unless the user has set a manual override
     var onScheme = function (e) {

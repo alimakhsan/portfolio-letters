@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>404 — Page not found · Ahmad Alim Akhsan</title>
+<title>404: Page not found · Ahmad Alim Akhsan</title>
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
@@ -70,19 +70,22 @@
   }
   p { font-size: 17px; line-height: 1.7; color: var(--ink2); margin: 0 0 28px; text-wrap: pretty; }
 
+  /* link-styled call to action (not a filled button) */
   .home {
-    display: inline-flex; align-items: center; gap: 8px;
-    font-size: 15px; font-weight: 600; text-decoration: none;
-    color: #fff; background: var(--accent); border-radius: 999px;
-    padding: 12px 20px; min-height: 44px;
-    box-shadow: 0 1px 2px rgba(20,18,10,.18),
-                0 8px 20px -8px color-mix(in srgb, var(--accent) 65%, transparent);
-    transition: transform .12s ease, box-shadow .2s ease, filter .15s ease;
+    display: inline-flex; align-items: center; gap: 7px;
+    margin-left: -2px; padding: 6px 2px; min-height: 40px;
+    font-size: 16px; font-weight: 600; text-decoration: none;
+    color: var(--accent); border-radius: 4px;
+    transition: opacity .15s ease, transform .12s ease;
   }
-  .home:hover { filter: brightness(1.04);
-    box-shadow: 0 1px 2px rgba(20,18,10,.2),
-                0 12px 26px -8px color-mix(in srgb, var(--accent) 75%, transparent); }
-  .home:active { transform: scale(.96); }
+  .home span {
+    text-decoration: underline; text-decoration-thickness: 1.5px;
+    text-underline-offset: 4px; text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+    transition: text-decoration-color .15s ease;
+  }
+  .home:hover { opacity: .82; }
+  .home:hover span { text-decoration-color: var(--accent); }
+  .home:active { transform: scale(.97); }
   .home svg { width: 18px; height: 18px; display: block; transition: transform .2s cubic-bezier(.2,0,0,1); }
   .home:hover svg { transform: translateX(-3px); }
 
