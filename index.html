@@ -35,7 +35,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Hanken+Grotesk:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&display=swap" rel="stylesheet">
 
 <style>
   * { box-sizing: border-box; }
@@ -162,24 +162,22 @@
   .sign { margin-top: 34px; }
   .sign-off { font-size: 17px; font-weight: 400; line-height: 1.72; color: var(--ink2); }
 
-  /* handwritten signature — "drawn" left to right */
-  .sig-hand { margin: 14px 0 0; }
-  .sig-hand-ink {
-    display: inline-block;
-    font-family: 'Dancing Script', 'Segoe Script', cursive;
-    font-weight: 700; font-size: clamp(40px, 7vw, 54px); line-height: 1;
-    color: var(--accent);
-    padding: 2px 8px 8px 2px;            /* room for the cursive flourish */
-    animation: sigDraw 1.15s cubic-bezier(.6,.02,.2,1) .12s both;
+  /* handwritten signature (real ink) — "drawn" left to right */
+  .sig-hand { margin: 8px 0 0; }
+  .sig-hand-img {
+    display: block; width: clamp(140px, 28vw, 178px); height: auto;
+    animation: sigDraw 1.25s cubic-bezier(.6,.02,.2,1) .12s both;
     will-change: clip-path, opacity;
   }
+  /* black ink → light ink on dark paper */
+  html[data-theme="dark"] .sig-hand-img { filter: invert(1); }
   @keyframes sigDraw {
-    from { clip-path: inset(0 100% -12% 0); opacity: .35; }
-    60%  { opacity: 1; }
-    to   { clip-path: inset(0 -6% -12% 0); opacity: 1; }
+    from { clip-path: inset(0 100% 0 0); opacity: .4; }
+    55%  { opacity: 1; }
+    to   { clip-path: inset(0 0 0 0); opacity: 1; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .sig-hand-ink { animation: none; clip-path: none; opacity: 1; }
+    .sig-hand-img { animation: none; clip-path: none; opacity: 1; }
   }
 
   .sign-row { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
@@ -233,8 +231,20 @@
   .footer {
     display: flex; align-items: center; justify-content: space-between; gap: 14px;
     margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--divider);
+    flex-wrap: wrap;
   }
+  .foot-left { display: flex; align-items: center; gap: 8px 14px; flex-wrap: wrap; }
   .copyright { font-size: 14px; font-weight: 400; color: var(--muted); white-space: nowrap; }
+  .archive { display: inline-flex; align-items: center; gap: 8px; }
+  .archive-label {
+    font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--faint);
+  }
+  .archive a {
+    font-size: 13px; font-weight: 500; color: var(--muted); text-decoration: none;
+    font-variant-numeric: tabular-nums; transition: color .15s;
+  }
+  .archive a:hover { color: var(--accent); }
   .theme-toggle {
     display: inline-flex; align-items: center; gap: 8px;
     font-family: inherit; font-size: 14px; font-weight: 500; letter-spacing: 0.01em;
@@ -271,14 +281,14 @@
 
           <div class="sign">
             <div class="sign-off" id="sign-off"></div>
-            <div class="sig-hand" aria-hidden="true"><span class="sig-hand-ink" id="sig-ink">Alim</span></div>
+            <div class="sig-hand" aria-hidden="true"><img class="sig-hand-img" id="sig-ink" src="/assets/signature.png" alt="" width="201" height="198"></div>
             <div class="sign-row">
               <img class="sign-avatar" width="42" height="42"
                    src="/assets/avatar.jpg"
                    alt="Ahmad Alim Akhsan">
               <div>
-                <div class="sign-name">Alim</div>
-                <div class="sign-role">Ahmad Alim Akhsan · Sr. Product Designer</div>
+                <div class="sign-name">Ahmad Alim Akhsan</div>
+                <div class="sign-role">Sr. Product Designer</div>
               </div>
             </div>
 
@@ -292,7 +302,14 @@
         </div>
 
         <div class="footer">
-          <span class="copyright">© 2026 Ahmad Alim Akhsan</span>
+          <div class="foot-left">
+            <span class="copyright">© 2026 Ahmad Alim Akhsan</span>
+            <span class="archive">
+              <span class="archive-label">Archive</span>
+              <a href="https://ahmadalim.framer.website/" target="_blank" rel="noopener">2025</a>
+              <a href="https://alimwork.framer.website/" target="_blank" rel="noopener">2024</a>
+            </span>
+          </div>
           <button class="theme-toggle" id="theme-toggle" type="button">
             <span aria-hidden="true" id="theme-icon"></span>
             <span id="theme-name"></span>
@@ -334,7 +351,7 @@
   var CONTACTS = [
     { label: "My work", href: "/work" },
     { label: "Email", href: "mailto:alim.akhsan@gmail.com" },
-    { label: "WhatsApp · +62 878 7086 7025", href: "https://wa.me/6287870867025" },
+    { label: "WhatsApp", href: "https://wa.me/6287870867025" },
     { label: "LinkedIn", href: "https://www.linkedin.com/in/alimakhsan" },
     { label: "Résumé (PDF)", href: "https://drive.google.com/file/d/1da_bE8hjolrlx4vTK_qn_eX3nBk5uZwS/view" }
   ];
@@ -391,7 +408,7 @@
         { v: "Est. 2017", k: "A studio in Yogyakarta" },
         { v: "HaloLagi", k: "Side project, built solo", href: "https://halolagi.com" },
         { v: "Writes & speaks", k: "On Medium, on stages", href: "https://medium.com/bukalapakproductdesign/design-process-in-reflection-fae78c483597" },
-        { v: "Coffee", k: "When the screen lets go" }
+        { v: "My Agency", k: "Independent design studio", href: "https://alimdesign.framer.website/" }
       ]
     }
   };
@@ -497,7 +514,7 @@
     document.getElementById("scene").style.backgroundImage = "url('" + SCENES[state.tab] + "')";
 
     document.getElementById("meta-place").textContent = L.place;
-    document.getElementById("meta-no").textContent = L.no + " / " + L.label;
+    document.getElementById("meta-no").textContent = L.label;
     document.getElementById("salutation").textContent = L.salutation;
 
     var first = document.getElementById("first-para");
