@@ -59,7 +59,7 @@
 
   body {
     font-family: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
-    -webkit-font-smoothing: antialiased;
+    -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
     background: var(--bg);
     color: var(--text);
     transition: background-color .25s ease, color .25s ease;
@@ -186,8 +186,9 @@
   .salutation {
     font-weight: 600; font-size: clamp(23px, 4vw, 30px); line-height: 1.18;
     letter-spacing: -0.02em; color: var(--text); margin: 22px 0 18px;
+    text-wrap: balance;
   }
-  .para { font-size: 17px; line-height: 1.72; color: var(--ink2); margin: 16px 0 0; }
+  .para { font-size: 17px; line-height: 1.72; color: var(--ink2); margin: 16px 0 0; text-wrap: pretty; }
   .para.first { margin: 0; }
   .para a, .body a.inline-link {
     color: var(--accent); text-decoration: none; transition: opacity .15s;
@@ -199,7 +200,7 @@
   }
   .quote span {
     font-weight: 500; font-size: clamp(19px, 3vw, 23px); line-height: 1.45;
-    color: var(--text); letter-spacing: -0.01em;
+    color: var(--text); letter-spacing: -0.01em; text-wrap: balance;
   }
 
   .sign { margin-top: 34px; }
@@ -207,8 +208,9 @@
   .sign-row { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
   .sign-avatar {
     width: 42px; height: 42px; border-radius: 50%; object-fit: cover;
-    flex: none; border: 1px solid var(--border);
+    flex: none; box-shadow: 0 0 0 1px rgba(0,0,0,.1);
   }
+  html[data-theme="dark"] .sign-avatar { box-shadow: 0 0 0 1px rgba(255,255,255,.1); }
   .sign-name { font-weight: 700; font-size: 20px; line-height: 1; letter-spacing: -0.01em; color: var(--text); }
   .sign-role { font-size: 14px; color: var(--muted); margin-top: 4px; }
 
@@ -221,7 +223,7 @@
     font-size: 14px; font-weight: 500; color: var(--chip-text); text-decoration: none;
     padding: 10px 14px; border: 1px solid var(--chip-border); border-radius: 999px;
     background: var(--chip-bg); white-space: nowrap;
-    transition: color .15s, border-color .15s, background-color .15s;
+    transition: color .15s, border-color .15s, background-color .15s, transform .12s ease;
   }
   .contacts a:hover {
     color: var(--accent); border-color: var(--accent);
@@ -251,12 +253,13 @@
   .glance-link {
     display: block; text-decoration: none; color: var(--text);
     border-radius: 7px; margin: -8px -10px; padding: 8px 10px;
-    transition: background-color .15s, color .15s;
+    transition: background-color .15s, color .15s, transform .12s ease;
   }
   .glance-link:hover { background: var(--divider); color: var(--accent); }
+  .glance-link:active { transform: scale(.96); }
   .glance-v {
     font-weight: 600; font-size: 20px; line-height: 1.1; letter-spacing: -0.01em;
-    color: var(--text);
+    color: var(--text); font-variant-numeric: tabular-nums;
   }
   .glance-link .glance-v {
     display: inline-flex; align-items: center; gap: 5px; color: inherit;
@@ -285,13 +288,37 @@
   .archive a:hover { color: var(--accent); }
   .theme-toggle, .font-toggle {
     display: inline-flex; align-items: center; justify-content: center; line-height: 0;
+    min-width: 40px; min-height: 40px;
     color: var(--muted); background: transparent;
     border: 1px solid var(--border); border-radius: 999px; padding: 9px;
-    cursor: pointer; transition: color .15s, border-color .15s;
+    cursor: pointer; transition: color .15s, border-color .15s, transform .12s ease;
   }
   .theme-toggle:hover, .font-toggle:hover { color: var(--accent); border-color: var(--accent); }
+  .theme-toggle:active, .font-toggle:active { transform: scale(.96); }
   .theme-toggle .ico, .font-toggle .ico { display: inline-flex; }
   .theme-toggle svg, .font-toggle svg { width: 18px; height: 18px; display: block; }
+
+  /* contextual icon swap (theme/font change) */
+  @media (prefers-reduced-motion: no-preference) {
+    .theme-toggle svg, .font-toggle svg { animation: iconIn .3s cubic-bezier(.2,0,0,1); }
+  }
+  @keyframes iconIn {
+    from { opacity: 0; transform: scale(.25); filter: blur(4px); }
+    to   { opacity: 1; transform: scale(1); filter: blur(0); }
+  }
+
+  /* press feedback on chips */
+  .contacts a:active { transform: scale(.96); }
+
+  /* staggered enter for the letter sections (replays on tab switch) */
+  @media (prefers-reduced-motion: no-preference) {
+    .intro .meta, .intro .body, .intro .contacts, .intro .glance {
+      animation: letterIn .5s cubic-bezier(.2,0,0,1) both;
+    }
+    .intro .body     { animation-delay: .06s; }
+    .intro .contacts { animation-delay: .12s; }
+    .intro .glance   { animation-delay: .18s; }
+  }
 </style>
 </head>
 <body>
@@ -605,8 +632,16 @@
     renderContacts();
     renderGlance(L);
 
-    document.getElementById("letter-panel")
-      .setAttribute("aria-labelledby", "ltab-" + state.tab);
+    var panel = document.getElementById("letter-panel");
+    panel.setAttribute("aria-labelledby", "ltab-" + state.tab);
+    replayIntro(panel);
+  }
+
+  // restart the staggered section enter (on load and each tab switch)
+  function replayIntro(panel) {
+    panel.classList.remove("intro");
+    void panel.offsetWidth; // force reflow so the animation restarts
+    panel.classList.add("intro");
   }
 
   function renderContacts() {
