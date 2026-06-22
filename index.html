@@ -120,6 +120,12 @@
     font-weight: 500; color: var(--muted);
   }
   .tab[aria-selected="true"] .tab-label { font-weight: 600; color: var(--text); }
+  /* shorten long tab labels on narrow screens so tabs don't collide */
+  .tab-label-short { display: none; }
+  @media (max-width: 600px) {
+    .tab-label-full { display: none; }
+    .tab-label-short { display: inline; }
+  }
   .tab-underline {
     position: absolute; left: 0; right: 0; bottom: -1px;
     height: 2px; background: var(--accent); display: none;
@@ -278,10 +284,12 @@
                 <div class="sign-role">Sr. Product Designer</div>
               </div>
             </div>
-
-            <div class="contacts" id="contacts"></div>
           </div>
         </div>
+
+        <!-- contacts: full-width (outside the 640px reading column) so the
+             divider above spans the sheet like the other section rules -->
+        <div class="contacts" id="contacts"></div>
 
         <div class="glance" id="glance">
           <div class="glance-title">At a glance</div>
@@ -320,6 +328,7 @@
   var ACCENT_OVERRIDE = null; // prop: accent   (default null)
 
   var ORDER = ["hr", "leads", "peers"];
+  var SHORT_LABEL = { leads: "For Leads" }; // shown on narrow screens to avoid tab collision
 
   var SCENES = {
     hr:    "https://images.unsplash.com/photo-1454496522488-7a8e488e8606?auto=format&fit=crop&w=2000&q=80",
@@ -485,10 +494,15 @@
       tab.setAttribute("aria-controls", "letter-panel");
       tab.tabIndex = active ? 0 : -1;
 
-      var label = document.createElement("span");
-      label.className = "tab-label";
-      label.textContent = item.label;
-      tab.appendChild(label);
+      var full = document.createElement("span");
+      full.className = "tab-label tab-label-full";
+      full.textContent = item.label;
+      tab.appendChild(full);
+
+      var short = document.createElement("span");
+      short.className = "tab-label tab-label-short";
+      short.textContent = SHORT_LABEL[id] || item.label;
+      tab.appendChild(short);
 
       var underline = document.createElement("div");
       underline.className = "tab-underline";
