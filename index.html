@@ -64,6 +64,10 @@
   }
   ::selection { background: rgba(99,102,241,.22); }
 
+  /* typeface modes (toggled in the footer): Sans (default) → Mono → Serif */
+  html[data-font="mono"] body { font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace; }
+  html[data-font="serif"] body { font-family: 'Newsreader', Georgia, "Times New Roman", serif; }
+
   .sr-only {
     position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
     overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
@@ -161,25 +165,6 @@
 
   .sign { margin-top: 34px; }
   .sign-off { font-size: 17px; font-weight: 400; line-height: 1.72; color: var(--ink2); }
-
-  /* handwritten signature (real ink) — "drawn" left to right */
-  .sig-hand { margin: 8px 0 0; }
-  .sig-hand-img {
-    display: block; width: clamp(140px, 28vw, 178px); height: auto;
-    animation: sigDraw 1.25s cubic-bezier(.6,.02,.2,1) .12s both;
-    will-change: clip-path, opacity;
-  }
-  /* black ink → light ink on dark paper */
-  html[data-theme="dark"] .sig-hand-img { filter: invert(1); }
-  @keyframes sigDraw {
-    from { clip-path: inset(0 100% 0 0); opacity: .4; }
-    55%  { opacity: 1; }
-    to   { clip-path: inset(0 0 0 0); opacity: 1; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .sig-hand-img { animation: none; clip-path: none; opacity: 1; }
-  }
-
   .sign-row { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
   .sign-avatar {
     width: 42px; height: 42px; border-radius: 50%; object-fit: cover;
@@ -229,11 +214,12 @@
 
   /* ---- footer / theme toggle ---- */
   .footer {
-    display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    display: flex; align-items: center; flex-wrap: wrap; gap: 12px 16px;
     margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--divider);
-    flex-wrap: wrap;
   }
-  .foot-left { display: flex; align-items: center; gap: 8px 14px; flex-wrap: wrap; }
+  /* desktop: copyright · archive · toggles spread with automatic spacing */
+  @media (min-width: 600px) { .footer { justify-content: space-between; } }
+  .toggles { display: inline-flex; align-items: center; gap: 8px; }
   .copyright { font-size: 14px; font-weight: 400; color: var(--muted); white-space: nowrap; }
   .archive { display: inline-flex; align-items: center; gap: 8px; }
   .archive-label {
@@ -245,14 +231,14 @@
     font-variant-numeric: tabular-nums; transition: color .15s;
   }
   .archive a:hover { color: var(--accent); }
-  .theme-toggle {
+  .theme-toggle, .font-toggle {
     display: inline-flex; align-items: center; gap: 8px;
     font-family: inherit; font-size: 14px; font-weight: 500; letter-spacing: 0.01em;
     color: var(--muted); background: transparent;
     border: 1px solid var(--border); border-radius: 999px; padding: 8px 15px;
     cursor: pointer; transition: color .15s, border-color .15s;
   }
-  .theme-toggle:hover { color: var(--accent); border-color: var(--accent); }
+  .theme-toggle:hover, .font-toggle:hover { color: var(--accent); border-color: var(--accent); }
 </style>
 </head>
 <body>
@@ -281,7 +267,6 @@
 
           <div class="sign">
             <div class="sign-off" id="sign-off"></div>
-            <div class="sig-hand" aria-hidden="true"><img class="sig-hand-img" id="sig-ink" src="/assets/signature.png" alt="" width="201" height="198"></div>
             <div class="sign-row">
               <img class="sign-avatar" width="42" height="42"
                    src="/assets/avatar.jpg"
@@ -302,18 +287,22 @@
         </div>
 
         <div class="footer">
-          <div class="foot-left">
-            <span class="copyright">© 2026 Ahmad Alim Akhsan</span>
-            <span class="archive">
-              <span class="archive-label">Archive</span>
-              <a href="https://ahmadalim.framer.website/" target="_blank" rel="noopener">2025</a>
-              <a href="https://alimwork.framer.website/" target="_blank" rel="noopener">2024</a>
-            </span>
+          <span class="copyright">© 2026 Ahmad Alim Akhsan</span>
+          <span class="archive">
+            <span class="archive-label">Archive</span>
+            <a href="https://ahmadalim.framer.website/" target="_blank" rel="noopener">2025</a>
+            <a href="https://alimwork.framer.website/" target="_blank" rel="noopener">2024</a>
+          </span>
+          <div class="toggles">
+            <button class="font-toggle" id="font-toggle" type="button">
+              <span aria-hidden="true">Aa</span>
+              <span id="font-name"></span>
+            </button>
+            <button class="theme-toggle" id="theme-toggle" type="button">
+              <span aria-hidden="true" id="theme-icon"></span>
+              <span id="theme-name"></span>
+            </button>
           </div>
-          <button class="theme-toggle" id="theme-toggle" type="button">
-            <span aria-hidden="true" id="theme-icon"></span>
-            <span id="theme-name"></span>
-          </button>
         </div>
       </article>
     </main>
@@ -415,7 +404,10 @@
 
   // ---- state ----
   var mqDark = window.matchMedia("(prefers-color-scheme: dark)");
-  var state = { tab: START_TAB, theme: "light" };
+  var state = { tab: START_TAB, theme: "light", font: "sans" };
+
+  var FONTS = ["sans", "mono", "serif"];
+  var FONT_LABEL = { sans: "Sans", mono: "Mono", serif: "Serif" };
 
   function read(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
   function write(key, val) { try { localStorage.setItem(key, val); } catch (e) {} }
@@ -533,22 +525,12 @@
     });
 
     document.getElementById("sign-off").textContent = L.signOff;
-    replaySignature();
 
     renderContacts();
     renderGlance(L);
 
     document.getElementById("letter-panel")
       .setAttribute("aria-labelledby", "ltab-" + state.tab);
-  }
-
-  // restart the handwritten-signature draw-on (e.g. when switching letters)
-  function replaySignature() {
-    var ink = document.getElementById("sig-ink");
-    if (!ink) return;
-    ink.style.animation = "none";
-    void ink.offsetWidth; // force reflow so the animation restarts
-    ink.style.animation = "";
   }
 
   function renderContacts() {
@@ -650,6 +632,22 @@
     renderTheme();
   }
 
+  function applyFont(f) { document.documentElement.setAttribute("data-font", f); }
+  function renderFont() {
+    document.getElementById("font-name").textContent = FONT_LABEL[state.font];
+    var btn = document.getElementById("font-toggle");
+    var lbl = "Change typeface (now: " + FONT_LABEL[state.font] + ")";
+    btn.setAttribute("aria-label", lbl);
+    btn.setAttribute("title", lbl);
+  }
+  function cycleFont() {
+    var i = FONTS.indexOf(state.font);
+    state.font = FONTS[(i + 1) % FONTS.length];
+    applyFont(state.font);
+    write("pf-font", state.font);
+    renderFont();
+  }
+
   // ---- init ----
   function init() {
     var stored = read("pf-theme-v2");
@@ -662,13 +660,20 @@
     if (!LETTERS[tab]) tab = "hr";
     state.tab = tab;
 
+    var font = read("pf-font") || "sans";
+    if (FONTS.indexOf(font) < 0) font = "sans";
+    state.font = font;
+    applyFont(font);
+
     renderTabs();
     renderLetter();
     renderTheme();
+    renderFont();
     applyAccent();
     setIdentity();
 
     document.getElementById("theme-toggle").addEventListener("click", toggleTheme);
+    document.getElementById("font-toggle").addEventListener("click", cycleFont);
 
     // follow the device theme unless the user has set a manual override
     var onScheme = function (e) {
