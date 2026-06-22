@@ -35,7 +35,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Lora:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
 
 <style>
   * { box-sizing: border-box; }
@@ -65,9 +65,16 @@
   ::selection { background: rgba(99,102,241,.22); }
 
   /* typeface modes (toggled in the footer): Sans (default) → Mono → Serif.
-     All three load the full 400–700 range so text keeps its natural weights. */
+     Mono keeps natural weights. Serif uses Lora for readable body text and
+     Playfair Display only for the large display elements (headings/quote/stats). */
   html[data-font="mono"] body { font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-  html[data-font="serif"] body { font-family: 'Playfair Display', Georgia, "Times New Roman", serif; }
+  html[data-font="serif"] body { font-family: 'Lora', Georgia, "Times New Roman", serif; }
+  html[data-font="serif"] .salutation,
+  html[data-font="serif"] .quote span,
+  html[data-font="serif"] .sign-name,
+  html[data-font="serif"] .glance-v {
+    font-family: 'Playfair Display', Georgia, "Times New Roman", serif;
+  }
 
   .sr-only {
     position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
