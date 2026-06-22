@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>404 — Page not found · Ahmad Alim Akhsan</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  :root, html[data-theme="light"] {
+    --bg:#f3f1ec; --paper:#fbfaf7; --border:#e3e0d8; --text:#1a1a18;
+    --ink2:#3a392f; --muted:#9a988f; --divider:#ece9e1; --accent:#3f6f9f;
+  }
+  html[data-theme="dark"] {
+    --bg:#0e0e0c; --paper:#161613; --border:#2a2a26; --text:#f3f2ec;
+    --ink2:#cfcdc2; --muted:#7c7a71; --divider:#242420; --accent:#7fa9d6;
+  }
+  body {
+    font-family: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    background: var(--bg); color: var(--text);
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .card {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 3px;
+    box-shadow: 0 1px 2px rgba(20,18,10,.04), 0 22px 50px -28px rgba(20,18,10,.28);
+    padding: clamp(34px, 6vw, 64px); max-width: 520px; width: 100%; text-align: left;
+  }
+  .eyebrow {
+    font-size: 14px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--accent); margin: 0 0 16px;
+  }
+  h1 {
+    font-weight: 600; font-size: clamp(26px, 5vw, 36px); line-height: 1.15;
+    letter-spacing: -0.02em; margin: 0 0 14px; color: var(--text);
+  }
+  p { font-size: 17px; line-height: 1.7; color: var(--ink2); margin: 0 0 28px; }
+  .home {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 15px; font-weight: 600; text-decoration: none;
+    color: #fff; background: var(--accent); border-radius: 999px;
+    padding: 12px 20px; transition: opacity .15s;
+  }
+  .home:hover { opacity: .9; }
+  .sig { margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--divider);
+         font-size: 14px; color: var(--muted); }
+</style>
+</head>
+<body>
+  <main class="card">
+    <p class="eyebrow">Error 404</p>
+    <h1>This page slipped out of the envelope.</h1>
+    <p>The letter you’re looking for isn’t here. Let’s get you back to the front page.</p>
+    <a class="home" href="/">← Back to the portfolio</a>
+    <div class="sig">© 2026 Ahmad Alim Akhsan · Sr. Product Designer</div>
+  </main>
+<script>
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("pf-theme-v2"); } catch (e) {}
+    if (!t) t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", t);
+  })();
+</script>
+</body>
+</html>

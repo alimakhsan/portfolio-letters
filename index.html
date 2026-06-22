@@ -4,7 +4,34 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ahmad Alim Akhsan · Product Designer</title>
-<meta name="description" content="Ahmad Alim Akhsan (Alim) — Senior Product Designer. Portfolio in letters.">
+<meta name="description" content="Senior Product Designer with 8+ years shipping products — a portfolio written as letters, for HR, design leads, and peers.">
+<link rel="canonical" href="https://ahmadalim.com/">
+
+<!-- favicon (photo) -->
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+
+<!-- Open Graph (LinkedIn, Facebook, WhatsApp) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Ahmad Alim Akhsan">
+<meta property="og:title" content="Ahmad Alim Akhsan · Senior Product Designer">
+<meta property="og:description" content="Senior Product Designer with 8+ years shipping products — a portfolio written as letters, for HR, design leads, and peers.">
+<meta property="og:url" content="https://ahmadalim.com/">
+<meta property="og:image" content="https://ahmadalim.com/assets/og-image.jpg">
+<meta property="og:image:secure_url" content="https://ahmadalim.com/assets/og-image.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Ahmad Alim Akhsan — Senior Product Designer">
+<meta property="og:locale" content="en_US">
+
+<!-- Twitter / X -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Ahmad Alim Akhsan · Senior Product Designer">
+<meta name="twitter:description" content="Senior Product Designer with 8+ years shipping products — a portfolio written as letters, for HR, design leads, and peers.">
+<meta name="twitter:image" content="https://ahmadalim.com/assets/og-image.jpg">
+<meta name="twitter:image:alt" content="Ahmad Alim Akhsan — Senior Product Designer">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -224,8 +251,8 @@
           <div class="sign">
             <div class="sign-off" id="sign-off"></div>
             <div class="sign-row">
-              <img class="sign-avatar"
-                   src="https://framerusercontent.com/images/BmzGMZdgIldCI9IgBtMfvSAXkE.jpg?width=120&height=120"
+              <img class="sign-avatar" width="42" height="42"
+                   src="/assets/avatar.jpg"
                    alt="Ahmad Alim Akhsan">
               <div>
                 <div class="sign-name">Alim</div>
@@ -367,16 +394,8 @@
   }
 
   function setIdentity() {
+    // Title is static in <head>; favicon is now the photo (static <link> tags).
     document.title = "Ahmad Alim Akhsan · Product Designer";
-    var hex = currentAccent().replace("#", "%23");
-    var svg = "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>" +
-              "<rect width='64' height='64' rx='14' fill='" + hex + "'/>" +
-              "<text x='32' y='46' font-family='Georgia,serif' font-style='italic' font-size='42' " +
-              "fill='white' text-anchor='middle'>A</text></svg>";
-    var link = document.querySelector("link[rel='icon']");
-    if (!link) { link = document.createElement("link"); link.rel = "icon"; document.head.appendChild(link); }
-    link.type = "image/svg+xml";
-    link.href = svg;
   }
 
   // turn a paragraph string into a DOM fragment, linking the first occurrence

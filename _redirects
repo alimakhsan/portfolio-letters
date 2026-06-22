@@ -1,0 +1,8 @@
+# Vanity shortcuts → easy to share/print on a CV
+/resume    https://drive.google.com/file/d/1hvki1yPYHHqE_phPsfSLPbjBhx7sFW53/view   301
+/cv        https://drive.google.com/file/d/1hvki1yPYHHqE_phPsfSLPbjBhx7sFW53/view   301
+/linkedin  https://www.linkedin.com/in/alimakhsan                                   301
+/wa        https://wa.me/6287870867025                                              301
+/whatsapp  https://wa.me/6287870867025                                              301
+
+# Unknown paths fall through to Netlify's automatic 404.html
