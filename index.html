@@ -33,6 +33,27 @@
 <meta name="twitter:image" content="https://ahmadalim.com/assets/og-image.jpg">
 <meta name="twitter:image:alt" content="Ahmad Alim Akhsan — Senior Product Designer">
 
+<!-- structured data (Google rich results / knowledge panel) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Ahmad Alim Akhsan",
+  "alternateName": "Alim",
+  "url": "https://ahmadalim.com/",
+  "image": "https://ahmadalim.com/assets/avatar.jpg",
+  "jobTitle": "Senior Product Designer",
+  "email": "mailto:alim.akhsan@gmail.com",
+  "knowsAbout": ["Product Design", "User Experience Design", "Design Systems", "Product Strategy"],
+  "sameAs": [
+    "https://www.linkedin.com/in/alimakhsan",
+    "https://alimdesign.framer.website/",
+    "https://ahmadalim.framer.website/",
+    "https://alimwork.framer.website/"
+  ]
+}
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Lora:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
@@ -240,6 +261,11 @@
       margin-right: calc(-1 * clamp(26px, 6vw, 86px));
       padding-left: clamp(26px, 6vw, 86px);
       padding-right: clamp(26px, 6vw, 86px);
+      /* soft edge fade hints that the row scrolls horizontally; the left
+         fade sits over the inset padding (invisible at rest), the right
+         fade catches the overflowing chips at the screen edge */
+      -webkit-mask-image: linear-gradient(to right, transparent 0, #000 28px, #000 calc(100% - 28px), transparent 100%);
+      mask-image: linear-gradient(to right, transparent 0, #000 28px, #000 calc(100% - 28px), transparent 100%);
     }
     .contacts-row::-webkit-scrollbar { display: none; }
     .contacts a { flex: 0 0 auto; }
