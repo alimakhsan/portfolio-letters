@@ -167,9 +167,9 @@
     border-radius: inherit;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     background-size: 180px 180px;
-    opacity: .055; mix-blend-mode: multiply;
+    opacity: .12; mix-blend-mode: multiply;
   }
-  html[data-theme="dark"] .sheet::before { mix-blend-mode: screen; opacity: .05; }
+  html[data-theme="dark"] .sheet::before { mix-blend-mode: screen; opacity: .08; }
   .meta {
     display: flex; align-items: center; justify-content: space-between; gap: 14px;
     padding-bottom: 26px; margin-bottom: 8px;
@@ -226,6 +226,16 @@
   .contacts a:hover {
     color: var(--accent); border-color: var(--accent);
     background: color-mix(in srgb, var(--accent) 9%, var(--chip-bg));
+  }
+  /* mobile: single-row horizontal scroll instead of wrapping */
+  @media (max-width: 600px) {
+    .contacts {
+      flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden;
+      scrollbar-width: none; -webkit-overflow-scrolling: touch;
+      overscroll-behavior-x: contain;
+    }
+    .contacts::-webkit-scrollbar { display: none; }
+    .contacts a { flex: 0 0 auto; }
   }
 
   /* ---- at a glance ---- */
