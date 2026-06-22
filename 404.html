@@ -16,50 +16,101 @@
   html, body { margin: 0; padding: 0; }
   :root, html[data-theme="light"] {
     --bg:#f3f1ec; --paper:#fbfaf7; --border:#e3e0d8; --text:#1a1a18;
-    --ink2:#3a392f; --muted:#9a988f; --divider:#ece9e1; --accent:#3f6f9f;
+    --ink2:#3a392f; --muted:#9a988f; --divider:#ece9e1;
+    --accent:#b07d24; --scene-filter:saturate(1.04);
   }
   html[data-theme="dark"] {
     --bg:#0e0e0c; --paper:#161613; --border:#2a2a26; --text:#f3f2ec;
-    --ink2:#cfcdc2; --muted:#7c7a71; --divider:#242420; --accent:#7fa9d6;
+    --ink2:#cfcdc2; --muted:#7c7a71; --divider:#242420;
+    --accent:#dcab4c; --scene-filter:brightness(.5) saturate(.82) contrast(1.05);
   }
   body {
     font-family: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
-    -webkit-font-smoothing: antialiased;
+    -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
     background: var(--bg); color: var(--text);
     min-height: 100vh; display: flex; align-items: center; justify-content: center;
-    padding: 24px;
+    padding: 24px; position: relative; overflow: hidden;
   }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+
+  /* desert dunes behind the card, theme-aware */
+  .scene {
+    position: fixed; left: 0; right: 0; bottom: 0; height: min(74vh, 760px);
+    z-index: 0; pointer-events: none;
+    background-image: url('https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=2000&q=80');
+    background-size: cover; background-position: center bottom;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 42%);
+            mask-image: linear-gradient(to bottom, transparent 0%, #000 42%);
+    filter: var(--scene-filter);
+  }
+
   .card {
+    position: relative; z-index: 1;
     background: var(--paper); border: 1px solid var(--border); border-radius: 3px;
-    box-shadow: 0 1px 2px rgba(20,18,10,.04), 0 22px 50px -28px rgba(20,18,10,.28);
+    box-shadow: 0 1px 2px rgba(20,18,10,.04), 0 22px 50px -28px rgba(20,18,10,.30);
     padding: clamp(34px, 6vw, 64px); max-width: 520px; width: 100%; text-align: left;
+    overflow: hidden; isolation: isolate;
   }
+  /* subtle paper grain (matches the main letter) */
+  .card::before {
+    content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    border-radius: inherit;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 180px 180px; opacity: .12; mix-blend-mode: multiply;
+  }
+  html[data-theme="dark"] .card::before { mix-blend-mode: screen; opacity: .08; }
+
   .eyebrow {
     font-size: 14px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--accent); margin: 0 0 16px;
+    color: var(--accent); margin: 0 0 16px; font-variant-numeric: tabular-nums;
   }
   h1 {
     font-weight: 600; font-size: clamp(26px, 5vw, 36px); line-height: 1.15;
-    letter-spacing: -0.02em; margin: 0 0 14px; color: var(--text);
+    letter-spacing: -0.02em; margin: 0 0 14px; color: var(--text); text-wrap: balance;
   }
-  p { font-size: 17px; line-height: 1.7; color: var(--ink2); margin: 0 0 28px; }
+  p { font-size: 17px; line-height: 1.7; color: var(--ink2); margin: 0 0 28px; text-wrap: pretty; }
+
   .home {
     display: inline-flex; align-items: center; gap: 8px;
     font-size: 15px; font-weight: 600; text-decoration: none;
     color: #fff; background: var(--accent); border-radius: 999px;
-    padding: 12px 20px; transition: opacity .15s;
+    padding: 12px 20px; min-height: 44px;
+    box-shadow: 0 1px 2px rgba(20,18,10,.18),
+                0 8px 20px -8px color-mix(in srgb, var(--accent) 65%, transparent);
+    transition: transform .12s ease, box-shadow .2s ease, filter .15s ease;
   }
-  .home:hover { opacity: .9; }
+  .home:hover { filter: brightness(1.04);
+    box-shadow: 0 1px 2px rgba(20,18,10,.2),
+                0 12px 26px -8px color-mix(in srgb, var(--accent) 75%, transparent); }
+  .home:active { transform: scale(.96); }
+  .home svg { width: 18px; height: 18px; display: block; transition: transform .2s cubic-bezier(.2,0,0,1); }
+  .home:hover svg { transform: translateX(-3px); }
+
   .sig { margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--divider);
          font-size: 14px; color: var(--muted); }
+
+  /* staggered enter */
+  @media (prefers-reduced-motion: no-preference) {
+    .card > * { animation: up .5s cubic-bezier(.2,0,0,1) both; }
+    .card > .eyebrow { animation-delay: .04s; }
+    .card > h1       { animation-delay: .10s; }
+    .card > p        { animation-delay: .16s; }
+    .card > .home    { animation-delay: .22s; }
+    .card > .sig     { animation-delay: .28s; }
+  }
+  @keyframes up { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 </style>
 </head>
 <body>
+  <div class="scene" aria-hidden="true"></div>
   <main class="card">
     <p class="eyebrow">Error 404</p>
     <h1>This page slipped out of the envelope.</h1>
     <p>The letter you’re looking for isn’t here. Let’s get you back to the front page.</p>
-    <a class="home" href="/">← Back to the portfolio</a>
+    <a class="home" href="/">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l14 0"/><path d="M5 12l6 6"/><path d="M5 12l6 -6"/></svg>
+      <span>Back to the portfolio</span>
+    </a>
     <div class="sig">© 2026 Ahmad Alim Akhsan · Sr. Product Designer</div>
   </main>
 <script>

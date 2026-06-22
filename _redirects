@@ -7,4 +7,8 @@
 /wa        https://wa.me/6287870867025                                              301
 /whatsapp  https://wa.me/6287870867025                                              301
 
+# Archive — older portfolio versions
+/2025      https://ahmadalim.framer.website/                                        301
+/2024      https://alimwork.framer.website/                                         301
+
 # Unknown paths fall through to Netlify's automatic 404.html
