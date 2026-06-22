@@ -35,7 +35,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
   * { box-sizing: border-box; }
@@ -65,10 +65,9 @@
   ::selection { background: rgba(99,102,241,.22); }
 
   /* typeface modes (toggled in the footer): Sans (default) → Mono → Serif.
-     Mono/Serif families load only weights 600 & 700, so lighter text is
-     matched up to 600 (700 stays 700) — a 600 minimum weight in these modes. */
-  html[data-font="mono"] body { font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-weight: 600; }
-  html[data-font="serif"] body { font-family: 'Playfair Display', Georgia, "Times New Roman", serif; font-weight: 600; }
+     All three load the full 400–700 range so text keeps its natural weights. */
+  html[data-font="mono"] body { font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  html[data-font="serif"] body { font-family: 'Playfair Display', Georgia, "Times New Roman", serif; }
 
   .sr-only {
     position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
