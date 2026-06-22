@@ -46,12 +46,14 @@
     --bg:#f3f1ec; --paper:#fbfaf7; --card:#ffffff; --border:#e3e0d8;
     --text:#1a1a18; --text2:#6f6d66; --ink2:#3a392f; --muted:#9a988f;
     --faint:#bdbbb1; --divider:#ece9e1; --accent:#6366f1; --rule:#d9d6cd;
+    --chip-bg:#ffffff; --chip-border:#e3e0d8; --chip-text:#6f6d66;
     --scene-filter:saturate(1.02);
   }
   html[data-theme="dark"] {
     --bg:#0e0e0c; --paper:#161613; --card:#17171c; --border:#2a2a26;
     --text:#f3f2ec; --text2:#a4a299; --ink2:#cfcdc2; --muted:#7c7a71;
     --faint:#56564f; --divider:#242420; --accent:#8b8df0; --rule:#2c2c27;
+    --chip-bg:#201f1b; --chip-border:#34332d; --chip-text:#cbc9bf;
     --scene-filter:brightness(.46) saturate(.82) contrast(1.05);
   }
 
@@ -216,12 +218,15 @@
   }
   .contacts a {
     display: inline-flex; align-items: center; line-height: 1;
-    font-size: 14px; font-weight: 500; color: var(--text2); text-decoration: none;
-    padding: 10px 14px; border: 1px solid var(--border); border-radius: 999px;
-    background: var(--card); white-space: nowrap;
-    transition: color .15s, border-color .15s;
+    font-size: 14px; font-weight: 500; color: var(--chip-text); text-decoration: none;
+    padding: 10px 14px; border: 1px solid var(--chip-border); border-radius: 999px;
+    background: var(--chip-bg); white-space: nowrap;
+    transition: color .15s, border-color .15s, background-color .15s;
   }
-  .contacts a:hover { color: var(--accent); border-color: var(--accent); }
+  .contacts a:hover {
+    color: var(--accent); border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 9%, var(--chip-bg));
+  }
 
   /* ---- at a glance ---- */
   .glance { margin-top: 18px; padding-top: 22px; border-top: 1px solid var(--divider); }
