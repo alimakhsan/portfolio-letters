@@ -215,9 +215,9 @@
   .sign-role { font-size: 14px; color: var(--muted); margin-top: 4px; }
 
   .contacts {
-    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
     margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--divider);
   }
+  .contacts-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .contacts a {
     display: inline-flex; align-items: center; line-height: 1;
     font-size: 14px; font-weight: 500; color: var(--chip-text); text-decoration: none;
@@ -229,14 +229,19 @@
     color: var(--accent); border-color: var(--accent);
     background: color-mix(in srgb, var(--accent) 9%, var(--chip-bg));
   }
-  /* mobile: single-row horizontal scroll instead of wrapping */
+  /* mobile: single-row horizontal scroll, full-bleed to the sheet edges
+     (the divider above stays inset on .contacts) */
   @media (max-width: 600px) {
-    .contacts {
+    .contacts-row {
       flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden;
       scrollbar-width: none; -webkit-overflow-scrolling: touch;
       overscroll-behavior-x: contain;
+      margin-left: calc(-1 * clamp(26px, 6vw, 86px));
+      margin-right: calc(-1 * clamp(26px, 6vw, 86px));
+      padding-left: clamp(26px, 6vw, 86px);
+      padding-right: clamp(26px, 6vw, 86px);
     }
-    .contacts::-webkit-scrollbar { display: none; }
+    .contacts-row::-webkit-scrollbar { display: none; }
     .contacts a { flex: 0 0 auto; }
   }
 
@@ -361,7 +366,9 @@
 
         <!-- contacts: full-width (outside the 640px reading column) so the
              divider above spans the sheet like the other section rules -->
-        <div class="contacts" id="contacts"></div>
+        <div class="contacts">
+          <div class="contacts-row" id="contacts"></div>
+        </div>
 
         <div class="glance" id="glance">
           <div class="glance-title">At a glance</div>
