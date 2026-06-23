@@ -496,27 +496,28 @@
     { term: "IDDS",         href: "https://design.inadigital.go.id/" },
     { term: "Bukalapak",    href: "https://brand.bukalapak.design/" },
     { term: "case studies", href: "/case-studies" },
-    { term: "résumé",       href: "https://drive.google.com/file/d/1da_bE8hjolrlx4vTK_qn_eX3nBk5uZwS/view" }
+    { term: "resume",       href: "/cv" }
   ];
 
+  // Shared contact chips, shown after each letter's per-role feature chip.
   var CONTACTS = [
-    { label: "Case Studies", href: "/case-studies" },
     { label: "Email", href: "mailto:alim.akhsan@gmail.com" },
     { label: "WhatsApp", href: "https://wa.me/6287870867025" },
     { label: "LinkedIn", href: "https://www.linkedin.com/in/alimakhsan" },
-    { label: "Résumé (PDF)", href: "https://drive.google.com/file/d/1da_bE8hjolrlx4vTK_qn_eX3nBk5uZwS/view" }
+    { label: "Resume (PDF)", href: "/cv" }
   ];
 
   var LETTERS = {
     hr: {
       label: "For HR", no: "No. 01", place: "Bekasi, Indonesia", year: "2026",
+      feature: { label: "Case Studies", href: "/case-studies" },
       salutation: "Dear Hiring Manager,",
       first: "Thank you for opening this. My name is Ahmad Alim Akhsan (Alim), a senior product designer with eight years of shipped work behind me, and I'd like to make your shortlist an easy decision. The short version: I join teams, I grow inside them, and I leave numbers behind.",
       quote: "I join teams, I grow inside them, and I leave numbers behind.",
       rest: [
         "I spent seven years at Bukalapak, one of Indonesia's largest marketplaces, on the platform serving millions of small store owners. I was promoted three times, from associate to senior, and the work earned its keep: a subscription model that unlocked $16K in new monthly revenue, an inventory tool that lifted stocktaking accuracy to 98.5% and prevented roughly $34K a month in losses, and an acquisition channel that converted ten times better at under a dollar per user.",
         "Today I'm a Senior Product Designer at GovTech Indonesia, designing public services for a national audience on the country's government design system. I work remotely, I document as I go, and I'm comfortable being the person who turns ambiguity into a plan that ships.",
-        "I'm open to full-time and freelance work from January 2026. My résumé, references, and case studies are a click away, and I'd gladly walk you through any of it on a call."
+        "I'm open to full-time and freelance work from January 2026. My resume, references, and case studies are a click away, and I'd gladly walk you through any of it on a call."
       ],
       signOff: "Warm regards,",
       glance: [
@@ -528,6 +529,7 @@
     },
     leads: {
       label: "For Design Leads", no: "No. 02", place: "Bekasi, Indonesia", year: "2026",
+      feature: { label: "Case Studies", href: "/case-studies" },
       salutation: "Dear Design Lead,",
       first: "If you're reading this, you probably care less about my metrics and more about how I think, so let me show my hand. I design for scale, and scale punishes anything decorative. My instinct is to find the smallest system that solves the most cases, then defend it.",
       quote: "Find the smallest system that solves the most cases, then defend it.",
@@ -546,6 +548,7 @@
     },
     founders: {
       label: "For Founders", no: "No. 03", place: "Bekasi, Indonesia", year: "2026",
+      feature: { label: "My Agency", href: "/my-agency" },
       salutation: "Dear Founder,",
       first: "You don't have months to find out whether an idea works. You have a runway, and I design for that constraint. My job is to help you validate the market, design the right thing, and put a testable prototype in real users' hands in days, not quarters, so your next round buys traction instead of guesswork.",
       quote: "Validate the market, design the right thing, ship something testable in days.",
@@ -564,6 +567,7 @@
     },
     peers: {
       label: "For Peers", no: "No. 04", place: "Bekasi, Indonesia", year: "2026",
+      feature: { label: "Case Studies", href: "/case-studies" },
       salutation: "Dear Fellow Designer,",
       first: "No pitch here, just the real version. I started in 2017 at a tiny studio in Yogyakarta where the brief might be a logo on Monday and a SaaS dashboard on Thursday. I had no idea what I was doing, and it was the best thing that could have happened: I learned to be useful before I learned to be precious.",
       quote: "I learned to be useful before I learned to be precious.",
@@ -726,7 +730,7 @@
 
     document.getElementById("sign-off").textContent = L.signOff;
 
-    renderContacts();
+    renderContacts(L);
     renderGlance(L);
 
     var panel = document.getElementById("letter-panel");
@@ -741,10 +745,12 @@
     panel.classList.add("intro");
   }
 
-  function renderContacts() {
+  function renderContacts(L) {
     var box = document.getElementById("contacts");
     box.innerHTML = "";
-    CONTACTS.forEach(function (c) {
+    // per-role feature chip leads, then the shared contacts
+    var chips = (L && L.feature ? [L.feature] : []).concat(CONTACTS);
+    chips.forEach(function (c) {
       var a = document.createElement("a");
       a.href = c.href; a.target = "_blank"; a.rel = "noopener";
       a.textContent = c.label;
