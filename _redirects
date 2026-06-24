@@ -1,6 +1,8 @@
+# Case studies now live on-site at /case-studies (was a Notion redirect).
+# /work stays as an internal alias to the on-site index.
+/work           /case-studies                                                       301
+
 # Vanity shortcuts → easy to share/print on a CV
-/case-studies   https://alimakhsan.notion.site/225bdef27bd68022a53ff5bec6f95231?v=225bdef27bd6818a9d85000c1554bfbf   301
-/work           https://alimakhsan.notion.site/225bdef27bd68022a53ff5bec6f95231?v=225bdef27bd6818a9d85000c1554bfbf   301
 /resume    https://drive.google.com/file/d/1da_bE8hjolrlx4vTK_qn_eX3nBk5uZwS/view   301
 /cv        https://drive.google.com/file/d/1da_bE8hjolrlx4vTK_qn_eX3nBk5uZwS/view   301
 /my-agency https://alimdesign.framer.website/                                       301
