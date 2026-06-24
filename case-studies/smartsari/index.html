@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en" data-scene="https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?auto=format&fit=crop&w=2000&q=80" data-accent-light="#3f7d4e" data-accent-dark="#74c184">
+<html lang="en"
+      data-scene-light="https://images.unsplash.com/photo-1428908728789-d2de25dbd4e2?auto=format&fit=crop&w=2000&q=80"
+      data-scene-dark="https://images.unsplash.com/photo-1584351583369-6baf055b51a7?auto=format&fit=crop&w=2000&q=80">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -31,15 +33,12 @@
     <div class="scene" id="scene" aria-hidden="true"></div>
 
     <main class="main">
-      <nav class="topnav" aria-label="Breadcrumb">
-        <a href="/case-studies">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-            <path d="M5 12l14 0"/><path d="M5 12l6 6"/><path d="M5 12l6 -6"/>
-          </svg>
-          <span>All case studies</span>
-        </a>
-        <span class="crumb-here">No. 03</span>
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a href="/">Ahmad Alim Akhsan</a>
+        <span class="crumb-sep" aria-hidden="true">/</span>
+        <a href="/case-studies">Case studies</a>
+        <span class="crumb-sep" aria-hidden="true">/</span>
+        <span class="crumb-current" aria-current="page">SmartSari</span>
       </nav>
 
       <article class="sheet intro">
@@ -96,13 +95,6 @@
 
         <div class="contacts">
           <div class="contacts-row">
-            <a href="/case-studies">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-                <path d="M5 12l14 0"/><path d="M5 12l6 6"/><path d="M5 12l6 -6"/>
-              </svg>
-              <span>All case studies</span>
-            </a>
             <a href="mailto:alim.akhsan@gmail.com">Email me</a>
             <a href="/cv" target="_blank" rel="noopener">Resume (PDF)</a>
           </div>
@@ -121,15 +113,6 @@
         </div>
       </article>
 
-      <div class="backtotop-wrap">
-        <button class="back-to-top" id="back-to-top" type="button" aria-label="Back to top">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-            <path d="M12 19l0 -14"/><path d="M6 11l6 -6"/><path d="M18 11l-6 -6"/>
-          </svg>
-          <span>Back to top</span>
-        </button>
-      </div>
     </main>
   </div>
 <script src="/assets/case.js"></script>

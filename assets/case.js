@@ -39,10 +39,21 @@
 
   function applyTheme(t) { root.setAttribute("data-theme", t); }
   function applyAccent() {
+    // per-page accent is deprecated; accent now follows the theme (CSS token).
+    // Kept for any page that still sets data-accent-*; otherwise a no-op.
     var a = state.theme === "dark"
       ? root.getAttribute("data-accent-dark")
       : root.getAttribute("data-accent-light");
     if (a) root.style.setProperty("--accent", a);
+  }
+  // bottom-anchored background photo, swapped per theme (clouds / street)
+  function applyScene() {
+    var sceneEl = document.getElementById("scene");
+    if (!sceneEl) return;
+    var url = state.theme === "dark"
+      ? root.getAttribute("data-scene-dark")
+      : root.getAttribute("data-scene-light");
+    if (url) sceneEl.style.backgroundImage = "url('" + url + "')";
   }
   function applyFont(f) { root.setAttribute("data-font", f); }
 
@@ -69,6 +80,7 @@
     applyTheme(state.theme);
     write("pf-theme-v2", state.theme);
     applyAccent();
+    applyScene();
     renderTheme();
   }
   function cycleFont() {
@@ -90,11 +102,7 @@
     state.font = font;
     applyFont(font);
 
-    // per-page scene photo
-    var sceneEl = document.getElementById("scene");
-    var sceneUrl = root.getAttribute("data-scene");
-    if (sceneEl && sceneUrl) sceneEl.style.backgroundImage = "url('" + sceneUrl + "')";
-
+    applyScene();
     applyAccent();
     renderTheme();
     renderFont();
@@ -104,32 +112,13 @@
     var fBtn = document.getElementById("font-toggle");
     if (fBtn) fBtn.addEventListener("click", cycleFont);
 
-    var backTop = document.getElementById("back-to-top");
-    if (backTop) backTop.addEventListener("click", function () {
-      var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
-    });
-
-    var bttWrap = document.querySelector(".backtotop-wrap");
-    if (bttWrap) {
-      if ("IntersectionObserver" in window) {
-        var io = new IntersectionObserver(function (entries) {
-          entries.forEach(function (en) {
-            if (en.isIntersecting) { bttWrap.classList.add("is-visible"); io.disconnect(); }
-          });
-        }, { threshold: 0.4 });
-        io.observe(bttWrap);
-      } else {
-        bttWrap.classList.add("is-visible");
-      }
-    }
-
     // follow device theme unless the user has set a manual override
     var onScheme = function (e) {
       if (!read("pf-theme-v2")) {
         state.theme = e.matches ? "dark" : "light";
         applyTheme(state.theme);
         applyAccent();
+        applyScene();
         renderTheme();
       }
     };

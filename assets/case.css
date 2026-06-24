@@ -2,6 +2,13 @@
    Case-studies shell. Shares the home page's visual language
    (tokens, paper sheet, typography, theme + font modes).
    Loaded by /case-studies and every /case-studies/* detail page.
+
+   Background photos (bottom-anchored scene, gradient sky above):
+   - Light: "white clouds during daytime" by Dominik Schröder
+     https://unsplash.com/photos/FIKD9t5_5zQ  (@wirhabenzeit)
+   - Dark: "cars parked on the side of the road in the city" by
+     Daniel Olah  https://unsplash.com/photos/MvoWhoTzEqo  (@danesduet)
+   Accent follows the photo: blue (sky) in light, yellow (taxi) in dark.
    ============================================================ */
 
 * { box-sizing: border-box; }
@@ -11,26 +18,33 @@ html, body { margin: 0; padding: 0; }
 html[data-theme="light"] {
   --bg:#f3f1ec; --paper:#fbfaf7; --card:#ffffff; --border:#e3e0d8;
   --text:#1a1a18; --text2:#6f6d66; --ink2:#3a392f; --muted:#9a988f;
-  --faint:#bdbbb1; --divider:#ece9e1; --accent:#6366f1; --rule:#d9d6cd;
+  --faint:#bdbbb1; --divider:#ece9e1; --accent:#2e6cb0; --rule:#d9d6cd;
   --chip-bg:#ffffff; --chip-border:#e3e0d8; --chip-text:#6f6d66;
-  --scene-filter:saturate(1.02);
+  --scene-filter:saturate(1.04);
+  /* sky → clouds, behind the bottom-anchored photo */
+  --grad-top:#c7dbed; --grad-bot:#eef3f7;
 }
 html[data-theme="dark"] {
   --bg:#0e0e0c; --paper:#161613; --card:#17171c; --border:#2a2a26;
   --text:#f3f2ec; --text2:#a4a299; --ink2:#cfcdc2; --muted:#7c7a71;
-  --faint:#56564f; --divider:#242420; --accent:#8b8df0; --rule:#2c2c27;
+  --faint:#56564f; --divider:#242420; --accent:#ecba4c; --rule:#2c2c27;
   --chip-bg:#201f1b; --chip-border:#34332d; --chip-text:#cbc9bf;
-  --scene-filter:brightness(.46) saturate(.82) contrast(1.05);
+  --scene-filter:brightness(.82) saturate(1.05) contrast(1.02);
+  /* night sky → street, behind the bottom-anchored photo */
+  --grad-top:#0a0b0d; --grad-bot:#15171b;
 }
 
 body {
   font-family: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
-  background: var(--bg);
-  color: var(--text);
-  transition: background-color .25s ease, color .25s ease;
+  color: var(--text); min-height: 100vh;
+  /* fixed sky-to-horizon gradient; the photo (scene) sits over the bottom */
+  background: var(--grad-bot);
+  background: linear-gradient(to bottom, var(--grad-top) 0%, var(--grad-bot) 62%);
+  background-attachment: fixed;
+  transition: color .25s ease;
 }
-::selection { background: rgba(99,102,241,.22); }
+::selection { background: color-mix(in srgb, var(--accent) 24%, transparent); }
 
 /* typeface modes (same toggle + storage key as home): Sans → Mono → Serif */
 html[data-font="mono"] body { font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
@@ -51,7 +65,7 @@ html[data-font="mono"] .contacts a,
 html[data-font="mono"] .glance-title,
 html[data-font="mono"] .eyebrow,
 html[data-font="mono"] .glance-k,
-html[data-font="mono"] .topnav a { font-size: 13px; }
+html[data-font="mono"] .crumbs { font-size: 13px; }
 
 .sr-only {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
@@ -68,7 +82,7 @@ a:focus-visible, button:focus-visible {
 /* ---- page shell ---- */
 .page {
   position: relative; min-height: 100vh;
-  background: var(--bg); color: var(--text);
+  color: var(--text);
   padding: 0 0 clamp(220px, 40vh, 440px);
   overflow: hidden;
 }
@@ -86,24 +100,20 @@ a:focus-visible, button:focus-visible {
   padding: clamp(30px, 6vw, 64px) clamp(20px, 5vw, 36px) 0;
 }
 
-/* ---- top nav (replaces the home tablist) ---- */
-.topnav {
-  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+/* ---- breadcrumb (replaces the home tablist) ---- */
+.crumbs {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px;
   border-bottom: 1px solid var(--rule);
   padding-bottom: 16px; margin-bottom: clamp(26px, 4vw, 44px);
+  font-size: 14px; letter-spacing: 0.01em;
 }
-.topnav a {
-  display: inline-flex; align-items: center; gap: 8px; line-height: 1;
-  font-size: 15px; font-weight: 500; color: var(--muted); text-decoration: none;
-  transition: color .15s, transform .12s ease;
+.crumbs a {
+  color: var(--muted); text-decoration: none; font-weight: 500;
+  transition: color .15s;
 }
-.topnav a:hover { color: var(--accent); }
-.topnav a:active { transform: scale(.97); }
-.topnav svg { width: 16px; height: 16px; display: block; }
-.topnav .crumb-here {
-  font-size: 13px; font-weight: 600; letter-spacing: 0.1em;
-  text-transform: uppercase; color: var(--accent);
-}
+.crumbs a:hover { color: var(--accent); }
+.crumb-sep { color: var(--faint); user-select: none; }
+.crumb-current { color: var(--text); font-weight: 600; }
 
 /* ---- paper sheet ---- */
 .sheet {

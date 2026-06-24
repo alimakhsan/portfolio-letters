@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en" data-scene="https://images.unsplash.com/photo-1454496522488-7a8e488e8606?auto=format&fit=crop&w=2000&q=80" data-accent-light="#3f6f9f" data-accent-dark="#7fa9d6">
+<html lang="en"
+      data-scene-light="https://images.unsplash.com/photo-1428908728789-d2de25dbd4e2?auto=format&fit=crop&w=2000&q=80"
+      data-scene-dark="https://images.unsplash.com/photo-1584351583369-6baf055b51a7?auto=format&fit=crop&w=2000&q=80">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -31,15 +33,10 @@
     <div class="scene" id="scene" aria-hidden="true"></div>
 
     <main class="main">
-      <nav class="topnav" aria-label="Breadcrumb">
-        <a href="/">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-            <path d="M5 12l14 0"/><path d="M5 12l6 6"/><path d="M5 12l6 -6"/>
-          </svg>
-          <span>Ahmad Alim Akhsan</span>
-        </a>
-        <span class="crumb-here">Case Studies</span>
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a href="/">Ahmad Alim Akhsan</a>
+        <span class="crumb-sep" aria-hidden="true">/</span>
+        <span class="crumb-current" aria-current="page">Case studies</span>
       </nav>
 
       <article class="sheet intro">
@@ -55,31 +52,23 @@
 
         <div class="study-list">
           <a class="study-row" href="/case-studies/idds">
-            <div class="study-eyebrow">GovTech Indonesia · Senior Product Designer · 2026</div>
-            <div class="study-title">IDDS, at the speed of government <span class="study-arrow" aria-hidden="true">↗</span></div>
-            <p class="study-sum">Making speed and consistency stop fighting each other inside Indonesia's government design system, so public services ship fast and still feel like one government.</p>
-            <span class="study-stat">~1 week → a day, concept to prototype</span>
+            <div class="study-eyebrow">IDDS · GovTech Indonesia</div>
+            <div class="study-title">Took a government design system from a week to a day <span class="study-arrow" aria-hidden="true">↗</span></div>
           </a>
 
           <a class="study-row" href="/case-studies/mitra-plus">
-            <div class="study-eyebrow">Bukalapak · Design lead · 2024</div>
-            <div class="study-title">Mitra Plus+ <span class="study-arrow" aria-hidden="true">↗</span></div>
-            <p class="study-sum">One subscription across 20+ of Bukalapak's digital tools, plus a premium brand, plus+, built from zero. Design lead from checkout flow to brand name.</p>
-            <span class="study-stat">$16K new monthly revenue</span>
+            <div class="study-eyebrow">Mitra Plus+ · Bukalapak</div>
+            <div class="study-title">Unified 20+ products into one subscription, +$16K monthly <span class="study-arrow" aria-hidden="true">↗</span></div>
           </a>
 
           <a class="study-row" href="/case-studies/smartsari">
-            <div class="study-eyebrow">Bukalapak · Founding designer · 2025</div>
-            <div class="study-title">SmartSari, zero to hero <span class="study-arrow" aria-hidden="true">↗</span></div>
-            <p class="study-sum">Founding design for the Philippines expansion: the localization strategy, the USP, and the MVP that took the product from zero into a new market.</p>
-            <span class="study-stat">$144K GMV in first month</span>
+            <div class="study-eyebrow">SmartSari · Bukalapak</div>
+            <div class="study-title">Localized an expansion product, $144K GMV in month one <span class="study-arrow" aria-hidden="true">↗</span></div>
           </a>
 
           <a class="study-row" href="/case-studies/leadership">
-            <div class="study-eyebrow">Bukalapak, Onstock &amp; ADPList · UX Lead · 2 years</div>
-            <div class="study-title">Leadership, strategy &amp; collaboration <span class="study-arrow" aria-hidden="true">↗</span></div>
-            <p class="study-sum">Not a project, but the through-line: mentoring 10+ designers, turning strategy into roadmaps, and the systems and testimonials behind how I lead a team.</p>
-            <span class="study-stat">10+ designers mentored</span>
+            <div class="study-eyebrow">Design leadership</div>
+            <div class="study-title">Mentored 10+ designers and built the systems behind them <span class="study-arrow" aria-hidden="true">↗</span></div>
           </a>
         </div>
 
@@ -96,15 +85,6 @@
         </div>
       </article>
 
-      <div class="backtotop-wrap">
-        <button class="back-to-top" id="back-to-top" type="button" aria-label="Back to top">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-            <path d="M12 19l0 -14"/><path d="M6 11l6 -6"/><path d="M18 11l-6 -6"/>
-          </svg>
-          <span>Back to top</span>
-        </button>
-      </div>
     </main>
   </div>
 <script src="/assets/case.js"></script>
