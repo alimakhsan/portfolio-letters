@@ -56,7 +56,16 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Lora:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+<!-- Critical: Hanken Grotesk is the default body font, so it stays on the
+     render path and always renders (the page's layout shift was the letter
+     entrance animation, not the font, so display:swap is CLS-safe here). -->
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Non-critical: Mono/Serif only appear after the user toggles the typeface,
+     so load them off the critical path. They're never shown at first paint, so
+     this does not add layout shift. -->
+<link rel="stylesheet" media="print" onload="this.media='all'"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Lora:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Lora:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"></noscript>
 
 <!-- accent: single source of truth, shared with the case-study pages -->
 <link rel="stylesheet" href="/assets/accent.css">
@@ -749,8 +758,13 @@
     replayIntro(panel);
   }
 
-  // restart the staggered section enter (on load and each tab switch)
+  // restart the staggered section enter. Skipped on the FIRST render: animating
+  // the freshly-painted letter blocks registers as a large Cumulative Layout
+  // Shift, so the initial load just appears, and the entrance plays only on
+  // subsequent tab switches (a user interaction, which never counts toward CLS).
+  var introPlayed = false;
   function replayIntro(panel) {
+    if (!introPlayed) { introPlayed = true; return; }
     panel.classList.remove("intro");
     void panel.offsetWidth; // force reflow so the animation restarts
     panel.classList.add("intro");
@@ -933,8 +947,11 @@
     catch (e) { mqDark.addListener(onScheme); }
   }
 
-  if (document.readyState !== "loading") init();
-  else document.addEventListener("DOMContentLoaded", init);
+  // Run synchronously: this script is the last node in <body>, so every element
+  // it touches already exists. Filling the letter content now (before the
+  // browser's first paint) avoids painting an empty skeleton and then shifting
+  // it in, which was the entire Cumulative Layout Shift on this page.
+  init();
 })();
 </script>
 </body>

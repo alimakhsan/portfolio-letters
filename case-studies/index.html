@@ -24,7 +24,13 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Lora:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+<!-- Critical: Hanken Grotesk (default body font) stays on the render path. -->
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Non-critical: Mono/Serif only appear after a typeface toggle, so load them
+     off the critical path (not shown at first paint, so no layout shift). -->
+<link rel="stylesheet" media="print" onload="this.media='all'"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Lora:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Lora:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"></noscript>
 <link rel="stylesheet" href="/assets/case.css">
 </head>
 <body>
@@ -39,7 +45,7 @@
         <span class="crumb-current" aria-current="page">Case studies</span>
       </nav>
 
-      <article class="sheet intro">
+      <article class="sheet">
         <div class="meta">
           <span class="meta-place">Selected product design work</span>
           <span class="meta-no">Case Studies</span>
