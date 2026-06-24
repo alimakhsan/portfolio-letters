@@ -66,7 +66,7 @@
   html[data-theme="light"] {
     --bg:#f3f1ec; --paper:#fbfaf7; --card:#ffffff; --border:#e3e0d8;
     --text:#1a1a18; --text2:#6f6d66; --ink2:#3a392f; --muted:#9a988f;
-    --faint:#bdbbb1; --divider:#ece9e1; --accent:#6366f1; --rule:#d9d6cd;
+    --faint:#bdbbb1; --divider:#ece9e1; --accent:#2e6cb0; --rule:#d9d6cd;
     --chip-bg:#ffffff; --chip-border:#e3e0d8; --chip-text:#6f6d66;
     --scene-filter:saturate(1.04);
     --grad-top:#c7dbed; --grad-bot:#eef3f7;
@@ -74,7 +74,7 @@
   html[data-theme="dark"] {
     --bg:#0e0e0c; --paper:#161613; --card:#17171c; --border:#2a2a26;
     --text:#f3f2ec; --text2:#a4a299; --ink2:#cfcdc2; --muted:#7c7a71;
-    --faint:#56564f; --divider:#242420; --accent:#8b8df0; --rule:#2c2c27;
+    --faint:#56564f; --divider:#242420; --accent:#7fb0dd; --rule:#2c2c27;
     --chip-bg:#201f1b; --chip-border:#34332d; --chip-text:#cbc9bf;
     --scene-filter:brightness(.92) contrast(1.04);
     --grad-top:#08090a; --grad-bot:#141518;
@@ -90,7 +90,7 @@
     background-attachment: fixed;
     transition: color .25s ease;
   }
-  ::selection { background: rgba(99,102,241,.22); }
+  ::selection { background: color-mix(in srgb, var(--accent) 24%, transparent); }
 
   /* typeface modes (toggled in the footer): Sans (default) → Mono → Serif.
      Mono keeps natural weights. Serif uses Lora for readable body text and
@@ -141,8 +141,7 @@
   }
   /* background photos (Unsplash): light "white clouds" by Dominik Schröder
      (@wirhabenzeit), dark "snow-capped mountain at night" by Haseeb Jamil
-     (@haseebjkhan). Pinned to the document bottom and revealed on scroll;
-     the per-role accent is what changes between tabs. */
+     (@haseebjkhan). Pinned to the document bottom and revealed on scroll. */
   .scene {
     position: absolute; left: 0; right: 0; bottom: 0;
     height: var(--reveal); z-index: 0; pointer-events: none;
@@ -489,16 +488,18 @@
   // without collision or scrolling (desktop keeps the full "For …" labels)
   var SHORT_LABEL = { hr: "HR", leads: "Leads", founders: "Founders", peers: "Peers" };
 
-  // Background photo is theme-based now (not per-role); the per-role accent is
-  // what changes between tabs. Light = clouds, dark = lone figure on a bench.
+  // Background photo and accent are both theme-based now (not per-role).
+  // Light = white clouds, dark = snow-capped mountain at night.
   var SCENES = {
     light: "https://images.unsplash.com/photo-1428908728789-d2de25dbd4e2?auto=format&fit=crop&w=2000&q=80",
     dark:  "https://images.unsplash.com/photo-1574610758891-5b809b6e6e2e?auto=format&fit=crop&w=2000&q=80"
   };
 
+  // One accent per theme, matched to the background photo (blue sky in light,
+  // icy night-mountain blue in dark). No longer varies per role.
   var ROLE_ACCENT = {
-    light: { hr: "#3f6f9f", leads: "#b07d24", founders: "#1f7a78", peers: "#5e8c43" },
-    dark:  { hr: "#7fa9d6", leads: "#dcab4c", founders: "#4fb3b0", peers: "#92c06d" }
+    light: "#2e6cb0",
+    dark:  "#7fb0dd"
   };
 
   var LINK_TERMS = [
@@ -626,15 +627,14 @@
   function currentAccent() {
     if (ACCENT_OVERRIDE) return ACCENT_OVERRIDE;
     var theme = state.theme === "dark" ? "dark" : "light";
-    var map = ROLE_ACCENT[theme] || ROLE_ACCENT.light;
-    return map[state.tab] || "#6366f1";
+    return ROLE_ACCENT[theme] || ROLE_ACCENT.light;
   }
 
   function applyTheme(t) { document.documentElement.setAttribute("data-theme", t); }
   function applyAccent() {
     document.documentElement.style.setProperty("--accent", currentAccent());
   }
-  // background photo follows the theme (not the tab); accent stays per-role
+  // background photo and accent both follow the theme (not the tab)
   function applyScene() {
     var el = document.getElementById("scene");
     if (el) el.style.backgroundImage = "url('" + (SCENES[state.theme] || SCENES.light) + "')";
