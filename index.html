@@ -140,8 +140,8 @@
     overflow: hidden;
   }
   /* background photos (Unsplash): light "white clouds" by Dominik Schröder
-     (@wirhabenzeit), dark "man on a concrete bench" by Matthew Henry
-     (@matthewhenry). Pinned to the document bottom and revealed on scroll;
+     (@wirhabenzeit), dark "snow-capped mountain at night" by Haseeb Jamil
+     (@haseebjkhan). Pinned to the document bottom and revealed on scroll;
      the per-role accent is what changes between tabs. */
   .scene {
     position: absolute; left: 0; right: 0; bottom: 0;
@@ -493,7 +493,7 @@
   // what changes between tabs. Light = clouds, dark = lone figure on a bench.
   var SCENES = {
     light: "https://images.unsplash.com/photo-1428908728789-d2de25dbd4e2?auto=format&fit=crop&w=2000&q=80",
-    dark:  "https://images.unsplash.com/photo-1472566316349-bce77aa2a778?auto=format&fit=crop&w=2000&q=80"
+    dark:  "https://images.unsplash.com/photo-1574610758891-5b809b6e6e2e?auto=format&fit=crop&w=2000&q=80"
   };
 
   var ROLE_ACCENT = {
@@ -645,6 +645,14 @@
     document.title = "Ahmad Alim Akhsan · Product Designer";
   }
 
+  // on-site links (the /case-studies section) open in the same tab; external
+  // links and vanity redirects keep target="_blank".
+  function setTarget(a, href) {
+    a.href = href;
+    if (/^\/case-studies/.test(href)) { a.rel = ""; return; }
+    a.target = "_blank"; a.rel = "noopener";
+  }
+
   // turn a paragraph string into a DOM fragment, linking the first occurrence
   // of each known term once
   function linkify(text) {
@@ -671,7 +679,7 @@
       if (p.type === "link") {
         var a = document.createElement("a");
         a.className = "inline-link";
-        a.href = p.href; a.target = "_blank"; a.rel = "noopener";
+        setTarget(a, p.href);
         a.textContent = p.value;
         frag.appendChild(a);
       } else {
@@ -766,7 +774,7 @@
     var chips = (L && L.feature ? [L.feature] : []).concat(CONTACTS);
     chips.forEach(function (c) {
       var a = document.createElement("a");
-      a.href = c.href; a.target = "_blank"; a.rel = "noopener";
+      setTarget(a, c.href);
       a.textContent = c.label;
       box.appendChild(a);
     });
@@ -783,7 +791,7 @@
       if (g.href) {
         var a = document.createElement("a");
         a.className = "glance-link";
-        a.href = g.href; a.target = "_blank"; a.rel = "noopener";
+        setTarget(a, g.href);
 
         var v = document.createElement("div");
         v.className = "glance-v";
