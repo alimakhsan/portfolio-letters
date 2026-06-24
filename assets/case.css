@@ -6,9 +6,9 @@
    Background photos (bottom-anchored scene, gradient sky above):
    - Light: "white clouds during daytime" by Dominik Schröder
      https://unsplash.com/photos/FIKD9t5_5zQ  (@wirhabenzeit)
-   - Dark: "cars parked on the side of the road in the city" by
-     Daniel Olah  https://unsplash.com/photos/MvoWhoTzEqo  (@danesduet)
-   Accent follows the photo: blue (sky) in light, yellow (taxi) in dark.
+   - Dark: "grayscale photography of man sitting on concrete bench" by
+     Matthew Henry  https://unsplash.com/photos/kX9lb7LUDWc  (@matthewhenry)
+   Accent: blue (sky) in light, yellow in dark.
    ============================================================ */
 
 * { box-sizing: border-box; }
@@ -29,9 +29,9 @@ html[data-theme="dark"] {
   --text:#f3f2ec; --text2:#a4a299; --ink2:#cfcdc2; --muted:#7c7a71;
   --faint:#56564f; --divider:#242420; --accent:#ecba4c; --rule:#2c2c27;
   --chip-bg:#201f1b; --chip-border:#34332d; --chip-text:#cbc9bf;
-  --scene-filter:brightness(.82) saturate(1.05) contrast(1.02);
-  /* night sky → street, behind the bottom-anchored photo */
-  --grad-top:#0a0b0d; --grad-bot:#15171b;
+  --scene-filter:brightness(.92) contrast(1.04);
+  /* near-black top → plaza floor, behind the bottom-anchored photo */
+  --grad-top:#08090a; --grad-bot:#141518;
 }
 
 body {
@@ -79,23 +79,29 @@ a:focus-visible, button:focus-visible {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ---- page shell ---- */
+/* ---- page shell ----
+   The body holds a viewport-fixed gradient (sky / night) as the backdrop.
+   The photo is pinned to the BOTTOM OF THE DOCUMENT (not the viewport), so
+   at the top you see only the gradient; scrolling down reveals the scene.
+   --reveal is both the scene height and the page's bottom space. */
 .page {
+  --reveal: clamp(420px, 70vh, 880px);
   position: relative; min-height: 100vh;
   color: var(--text);
-  padding: 0 0 clamp(220px, 40vh, 440px);
+  padding: 0 0 var(--reveal);
   overflow: hidden;
 }
 .scene {
-  position: fixed; left: 0; right: 0; bottom: 0;
-  height: min(82vh, 820px); z-index: 0; pointer-events: none;
+  position: absolute; left: 0; right: 0; bottom: 0;
+  height: var(--reveal); z-index: 0; pointer-events: none;
   background-size: cover; background-position: center bottom;
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 36%);
-          mask-image: linear-gradient(to bottom, transparent 0%, #000 36%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 30%);
+          mask-image: linear-gradient(to bottom, transparent 0%, #000 30%);
   filter: var(--scene-filter);
 }
 .main {
   position: relative; z-index: 1;
+  min-height: 100vh; /* keep the photo below the fold on short pages */
   max-width: 940px; margin: 0 auto;
   padding: clamp(30px, 6vw, 64px) clamp(20px, 5vw, 36px) 0;
 }
@@ -199,21 +205,21 @@ html[data-theme="dark"] .sheet::before { mix-blend-mode: screen; opacity: .15; }
   text-wrap: pretty;
 }
 
-/* ---- testimonial cards (leadership page) ---- */
-.quotes {
-  margin-top: 18px;
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 16px;
+/* ---- testimonials as quotes (leadership: personal, letter-like) ---- */
+.says { margin-top: 6px; }
+.say {
+  margin: 28px 0 0; padding: 2px 0 2px 22px;
+  border-left: 2px solid var(--accent);
 }
-.qcard {
-  background: var(--card); border: 1px solid var(--border); border-radius: 9px;
-  padding: 20px 22px; position: relative;
+.say p {
+  margin: 0; font-size: clamp(17px, 2.2vw, 19px); line-height: 1.55;
+  color: var(--text); letter-spacing: -0.01em; text-wrap: pretty;
 }
-.qcard p {
-  margin: 0; font-size: 15px; line-height: 1.62; color: var(--ink2); text-wrap: pretty;
+.say cite {
+  display: block; margin-top: 10px; font-style: normal;
+  font-size: 14px; color: var(--muted);
 }
-.qcard .qwho { margin-top: 14px; font-size: 13px; font-weight: 600; color: var(--text); }
-.qcard .qrole { font-weight: 400; color: var(--muted); }
+.say cite b { color: var(--text); font-weight: 600; }
 
 /* ---- outcome stat grid (same component as home's "At a glance") ---- */
 .glance { margin-top: 18px; padding-top: 22px; border-top: 1px solid var(--divider); }
@@ -251,13 +257,13 @@ html[data-theme="dark"] .sheet::before { mix-blend-mode: screen; opacity: .15; }
 .contacts a svg { width: 15px; height: 15px; display: block; }
 
 /* ---- index: list of studies ---- */
-.study-list { margin-top: 4px; }
+.study-list { margin-top: clamp(30px, 4vw, 46px); }
 .study-row {
   display: block; text-decoration: none; color: var(--text);
   padding: 26px 0; border-top: 1px solid var(--divider);
   transition: color .15s;
 }
-.study-row:first-child { border-top: none; padding-top: 6px; }
+.study-row:first-child { border-top: none; padding-top: 0; }
 .study-eyebrow {
   font-size: 13px; font-weight: 500; letter-spacing: 0.02em; color: var(--muted);
   font-variant-numeric: tabular-nums;
@@ -265,10 +271,10 @@ html[data-theme="dark"] .sheet::before { mix-blend-mode: screen; opacity: .15; }
 .study-title {
   font-weight: 600; font-size: clamp(22px, 3.4vw, 28px); line-height: 1.18;
   letter-spacing: -0.02em; color: var(--text); margin: 6px 0 0;
-  display: inline-flex; align-items: baseline; gap: 8px; text-wrap: balance;
-  transition: color .15s;
+  display: flex; align-items: center; justify-content: space-between; gap: 18px;
+  text-wrap: balance; transition: color .15s;
 }
-.study-arrow { font-size: 16px; opacity: .5; transition: transform .18s ease, opacity .15s; }
+.study-arrow { flex: none; font-size: 16px; opacity: .5; transition: transform .18s ease, opacity .15s; }
 .study-row:hover .study-title { color: var(--accent); }
 .study-row:hover .study-arrow { transform: translateX(3px); opacity: 1; }
 .study-sum { font-size: 16px; line-height: 1.6; color: var(--ink2); margin: 8px 0 0; max-width: 620px; text-wrap: pretty; }

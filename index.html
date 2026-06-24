@@ -68,22 +68,27 @@
     --text:#1a1a18; --text2:#6f6d66; --ink2:#3a392f; --muted:#9a988f;
     --faint:#bdbbb1; --divider:#ece9e1; --accent:#6366f1; --rule:#d9d6cd;
     --chip-bg:#ffffff; --chip-border:#e3e0d8; --chip-text:#6f6d66;
-    --scene-filter:saturate(1.02);
+    --scene-filter:saturate(1.04);
+    --grad-top:#c7dbed; --grad-bot:#eef3f7;
   }
   html[data-theme="dark"] {
     --bg:#0e0e0c; --paper:#161613; --card:#17171c; --border:#2a2a26;
     --text:#f3f2ec; --text2:#a4a299; --ink2:#cfcdc2; --muted:#7c7a71;
     --faint:#56564f; --divider:#242420; --accent:#8b8df0; --rule:#2c2c27;
     --chip-bg:#201f1b; --chip-border:#34332d; --chip-text:#cbc9bf;
-    --scene-filter:brightness(.46) saturate(.82) contrast(1.05);
+    --scene-filter:brightness(.92) contrast(1.04);
+    --grad-top:#08090a; --grad-bot:#141518;
   }
 
   body {
     font-family: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
-    background: var(--bg);
-    color: var(--text);
-    transition: background-color .25s ease, color .25s ease;
+    color: var(--text); min-height: 100vh;
+    /* fixed sky-to-horizon gradient; the photo (scene) sits over the bottom */
+    background: var(--grad-bot);
+    background: linear-gradient(to bottom, var(--grad-top) 0%, var(--grad-bot) 62%);
+    background-attachment: fixed;
+    transition: color .25s ease;
   }
   ::selection { background: rgba(99,102,241,.22); }
 
@@ -128,21 +133,27 @@
 
   /* ---- page shell ---- */
   .page {
+    --reveal: clamp(420px, 70vh, 880px);
     position: relative; min-height: 100vh;
-    background: var(--bg); color: var(--text);
-    padding: 0 0 clamp(220px, 40vh, 440px);
+    color: var(--text);
+    padding: 0 0 var(--reveal);
     overflow: hidden;
   }
+  /* background photos (Unsplash): light "white clouds" by Dominik Schröder
+     (@wirhabenzeit), dark "man on a concrete bench" by Matthew Henry
+     (@matthewhenry). Pinned to the document bottom and revealed on scroll;
+     the per-role accent is what changes between tabs. */
   .scene {
-    position: fixed; left: 0; right: 0; bottom: 0;
-    height: min(82vh, 820px); z-index: 0; pointer-events: none;
+    position: absolute; left: 0; right: 0; bottom: 0;
+    height: var(--reveal); z-index: 0; pointer-events: none;
     background-size: cover; background-position: center bottom;
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 36%);
-            mask-image: linear-gradient(to bottom, transparent 0%, #000 36%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 30%);
+            mask-image: linear-gradient(to bottom, transparent 0%, #000 30%);
     filter: var(--scene-filter);
   }
   .main {
     position: relative; z-index: 1;
+    min-height: 100vh; /* keep the photo below the fold on short letters */
     max-width: 940px; margin: 0 auto;
     padding: clamp(30px, 6vw, 64px) clamp(20px, 5vw, 36px) 0;
   }
@@ -478,11 +489,11 @@
   // without collision or scrolling (desktop keeps the full "For …" labels)
   var SHORT_LABEL = { hr: "HR", leads: "Leads", founders: "Founders", peers: "Peers" };
 
+  // Background photo is theme-based now (not per-role); the per-role accent is
+  // what changes between tabs. Light = clouds, dark = lone figure on a bench.
   var SCENES = {
-    hr:       "https://images.unsplash.com/photo-1454496522488-7a8e488e8606?auto=format&fit=crop&w=2000&q=80",
-    leads:    "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=2000&q=80",
-    founders: "https://images.unsplash.com/photo-1505765050516-f72dcac9c60e?auto=format&fit=crop&w=2000&q=80",
-    peers:    "https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?auto=format&fit=crop&w=2000&q=80"
+    light: "https://images.unsplash.com/photo-1428908728789-d2de25dbd4e2?auto=format&fit=crop&w=2000&q=80",
+    dark:  "https://images.unsplash.com/photo-1472566316349-bce77aa2a778?auto=format&fit=crop&w=2000&q=80"
   };
 
   var ROLE_ACCENT = {
@@ -623,6 +634,11 @@
   function applyAccent() {
     document.documentElement.style.setProperty("--accent", currentAccent());
   }
+  // background photo follows the theme (not the tab); accent stays per-role
+  function applyScene() {
+    var el = document.getElementById("scene");
+    if (el) el.style.backgroundImage = "url('" + (SCENES[state.theme] || SCENES.light) + "')";
+  }
 
   function setIdentity() {
     // Title is static in <head>; favicon is now the photo (static <link> tags).
@@ -706,8 +722,6 @@
   // ---- render: letter ----
   function renderLetter() {
     var L = LETTERS[state.tab];
-
-    document.getElementById("scene").style.backgroundImage = "url('" + SCENES[state.tab] + "')";
 
     document.getElementById("meta-place").textContent = L.place;
     document.getElementById("meta-no").textContent = L.label;
@@ -841,6 +855,7 @@
     applyTheme(t);
     write("pf-theme-v2", t);
     applyAccent();
+    applyScene();
     setIdentity();
     renderTheme();
   }
@@ -883,6 +898,7 @@
     renderTheme();
     renderFont();
     applyAccent();
+    applyScene();
     setIdentity();
 
     document.getElementById("theme-toggle").addEventListener("click", toggleTheme);
@@ -915,6 +931,7 @@
         state.theme = e.matches ? "dark" : "light";
         applyTheme(state.theme);
         applyAccent();
+        applyScene();
         setIdentity();
         renderTheme();
       }
