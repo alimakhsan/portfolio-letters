@@ -8,8 +8,9 @@
      https://unsplash.com/photos/FIKD9t5_5zQ  (@wirhabenzeit)
    - Dark: "snow-capped mountain at night" by Haseeb Jamil
      https://unsplash.com/photos/3s85IxVDyXE  (@haseebjkhan)
-   Accent: blue (sky) in light, icy blue (night mountain) in dark.
+   Accent: shared from accent.css (single source of truth, imported below).
    ============================================================ */
+@import url("accent.css");
 
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
@@ -18,7 +19,7 @@ html, body { margin: 0; padding: 0; }
 html[data-theme="light"] {
   --bg:#f3f1ec; --paper:#fbfaf7; --card:#ffffff; --border:#e3e0d8;
   --text:#1a1a18; --text2:#6f6d66; --ink2:#3a392f; --muted:#9a988f;
-  --faint:#bdbbb1; --divider:#ece9e1; --accent:#2e6cb0; --rule:#d9d6cd;
+  --faint:#bdbbb1; --divider:#ece9e1; --rule:#d9d6cd;
   --chip-bg:#ffffff; --chip-border:#e3e0d8; --chip-text:#6f6d66;
   --scene-filter:saturate(1.04);
   /* sky → clouds, behind the bottom-anchored photo */
@@ -27,7 +28,7 @@ html[data-theme="light"] {
 html[data-theme="dark"] {
   --bg:#0e0e0c; --paper:#161613; --card:#17171c; --border:#2a2a26;
   --text:#f3f2ec; --text2:#a4a299; --ink2:#cfcdc2; --muted:#7c7a71;
-  --faint:#56564f; --divider:#242420; --accent:#7fb0dd; --rule:#2c2c27;
+  --faint:#56564f; --divider:#242420; --rule:#2c2c27;
   --chip-bg:#201f1b; --chip-border:#34332d; --chip-text:#cbc9bf;
   --scene-filter:brightness(.92) contrast(1.04);
   /* near-black top → night sky, behind the bottom-anchored photo */

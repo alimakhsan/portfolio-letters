@@ -1,0 +1,10 @@
+/* ============================================================
+   Single source of truth for the theme accent.
+   Shared by the home page (index.html) and every case-study page
+   (via @import in case.css). Change the accent here and nowhere else.
+   Light = blue sky, dark = icy night-mountain blue (matches the
+   background photos). Driven purely by data-theme, no JS.
+   ============================================================ */
+:root,
+html[data-theme="light"] { --accent: #2e6cb0; }
+html[data-theme="dark"]  { --accent: #7fb0dd; }

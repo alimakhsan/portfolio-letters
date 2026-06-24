@@ -58,6 +58,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Lora:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
 
+<!-- accent: single source of truth, shared with the case-study pages -->
+<link rel="stylesheet" href="/assets/accent.css">
+
 <style>
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
@@ -66,7 +69,7 @@
   html[data-theme="light"] {
     --bg:#f3f1ec; --paper:#fbfaf7; --card:#ffffff; --border:#e3e0d8;
     --text:#1a1a18; --text2:#6f6d66; --ink2:#3a392f; --muted:#9a988f;
-    --faint:#bdbbb1; --divider:#ece9e1; --accent:#2e6cb0; --rule:#d9d6cd;
+    --faint:#bdbbb1; --divider:#ece9e1; --rule:#d9d6cd;
     --chip-bg:#ffffff; --chip-border:#e3e0d8; --chip-text:#6f6d66;
     --scene-filter:saturate(1.04);
     --grad-top:#c7dbed; --grad-bot:#eef3f7;
@@ -74,7 +77,7 @@
   html[data-theme="dark"] {
     --bg:#0e0e0c; --paper:#161613; --card:#17171c; --border:#2a2a26;
     --text:#f3f2ec; --text2:#a4a299; --ink2:#cfcdc2; --muted:#7c7a71;
-    --faint:#56564f; --divider:#242420; --accent:#7fb0dd; --rule:#2c2c27;
+    --faint:#56564f; --divider:#242420; --rule:#2c2c27;
     --chip-bg:#201f1b; --chip-border:#34332d; --chip-text:#cbc9bf;
     --scene-filter:brightness(.92) contrast(1.04);
     --grad-top:#08090a; --grad-bot:#141518;
@@ -481,25 +484,18 @@
   // ---- config ----
   var SHOW_GLANCE = true;   // prop: showGlance (default true)
   var START_TAB   = "hr";   // prop: startTab  (default "hr")
-  var ACCENT_OVERRIDE = null; // prop: accent   (default null)
 
   var ORDER = ["hr", "leads", "founders", "peers"];
   // narrow screens drop the "For " framing to bare words so four tabs fit
   // without collision or scrolling (desktop keeps the full "For …" labels)
   var SHORT_LABEL = { hr: "HR", leads: "Leads", founders: "Founders", peers: "Peers" };
 
-  // Background photo and accent are both theme-based now (not per-role).
-  // Light = white clouds, dark = snow-capped mountain at night.
+  // Background photo is theme-based (not per-role). Light = white clouds,
+  // dark = snow-capped mountain at night. The accent is theme-based too, but
+  // lives in assets/accent.css (single source of truth, driven by data-theme).
   var SCENES = {
     light: "https://images.unsplash.com/photo-1428908728789-d2de25dbd4e2?auto=format&fit=crop&w=2000&q=80",
     dark:  "https://images.unsplash.com/photo-1574610758891-5b809b6e6e2e?auto=format&fit=crop&w=2000&q=80"
-  };
-
-  // One accent per theme, matched to the background photo (blue sky in light,
-  // icy night-mountain blue in dark). No longer varies per role.
-  var ROLE_ACCENT = {
-    light: "#2e6cb0",
-    dark:  "#7fb0dd"
   };
 
   var LINK_TERMS = [
@@ -624,17 +620,10 @@
   function write(key, val) { try { localStorage.setItem(key, val); } catch (e) {} }
 
   // ---- helpers ----
-  function currentAccent() {
-    if (ACCENT_OVERRIDE) return ACCENT_OVERRIDE;
-    var theme = state.theme === "dark" ? "dark" : "light";
-    return ROLE_ACCENT[theme] || ROLE_ACCENT.light;
-  }
-
+  // accent is handled entirely in CSS (assets/accent.css) via data-theme;
+  // only the theme attribute and the background photo are set from JS.
   function applyTheme(t) { document.documentElement.setAttribute("data-theme", t); }
-  function applyAccent() {
-    document.documentElement.style.setProperty("--accent", currentAccent());
-  }
-  // background photo and accent both follow the theme (not the tab)
+  // background photo follows the theme (not the tab)
   function applyScene() {
     var el = document.getElementById("scene");
     if (el) el.style.backgroundImage = "url('" + (SCENES[state.theme] || SCENES.light) + "')";
@@ -837,7 +826,6 @@
     write("pf-letter-tab", id);
     renderTabs();
     renderLetter();
-    applyAccent();
     setIdentity();
     if (focusIt) {
       var el = document.getElementById("ltab-" + id);
@@ -862,7 +850,6 @@
     state.theme = t;
     applyTheme(t);
     write("pf-theme-v2", t);
-    applyAccent();
     applyScene();
     setIdentity();
     renderTheme();
@@ -905,7 +892,6 @@
     renderLetter();
     renderTheme();
     renderFont();
-    applyAccent();
     applyScene();
     setIdentity();
 
@@ -938,7 +924,6 @@
       if (!read("pf-theme-v2")) {
         state.theme = e.matches ? "dark" : "light";
         applyTheme(state.theme);
-        applyAccent();
         applyScene();
         setIdentity();
         renderTheme();
