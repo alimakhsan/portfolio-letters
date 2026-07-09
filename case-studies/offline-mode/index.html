@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en"
+      data-scene-light="https://images.unsplash.com/photo-1428908728789-d2de25dbd4e2?auto=format&fit=crop&w=2000&q=80"
+      data-scene-dark="https://images.unsplash.com/photo-1574610758891-5b809b6e6e2e?auto=format&fit=crop&w=2000&q=80">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Offline mode · Case study · Ahmad Alim Akhsan</title>
+<meta name="description" content="How a store visit on the busiest day of the month took inventory stocktaking from two and a half days to zero, by designing for a constraint no one could see from the office.">
+<link rel="canonical" href="https://ahmadalim.com/case-studies/offline-mode">
+
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Ahmad Alim Akhsan">
+<meta property="og:title" content="Offline mode · Case study">
+<meta property="og:description" content="Stocktaking from two and a half days to zero, by designing for the constraint that was invisible from the office: no internet where the counting happened.">
+<meta property="og:url" content="https://ahmadalim.com/case-studies/offline-mode">
+<meta property="og:image" content="https://ahmadalim.com/assets/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ahmadalim.com/assets/og-image.jpg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Critical: Hanken Grotesk (default body font) stays on the render path. -->
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Non-critical: Mono/Serif only appear after a typeface toggle, so load them
+     off the critical path (not shown at first paint, so no layout shift). -->
+<link rel="stylesheet" media="print" onload="this.media='all'"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Lora:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Lora:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"></noscript>
+<link rel="stylesheet" href="/assets/case.css">
+</head>
+<body>
+  <div class="page">
+    <h1 class="sr-only">Offline mode case study by Ahmad Alim Akhsan.</h1>
+    <div class="scene" id="scene" aria-hidden="true"></div>
+
+    <main class="main">
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a href="/">Ahmad Alim Akhsan</a>
+        <span class="crumb-sep" aria-hidden="true">/</span>
+        <a href="/case-studies">Case studies</a>
+        <span class="crumb-sep" aria-hidden="true">/</span>
+        <span class="crumb-current" aria-current="page">Offline mode</span>
+      </nav>
+
+      <article class="sheet">
+        <div class="meta">
+          <span class="meta-place">Onstock, Bukalapak · Senior Product Designer · O2O Retail</span>
+          <span class="meta-no">Product Discovery</span>
+        </div>
+
+        <div class="body">
+          <div class="salutation">Took store stocktaking from two and a half days to zero</div>
+          <p class="lede">Bukalapak's offline retail arm counted inventory by hand. Each count took about two and a half days and forced a store to close, so every count meant lost sales, and constant mismatches put storemen at risk of penalties. My work: find the real reason it was so slow, and design it away.</p>
+
+          <blockquote class="quote"><span>If you never go to where the problem lives, you'll design a beautiful solution to a problem that doesn't exist.</span></blockquote>
+
+          <div class="eyebrow first">Context</div>
+          <p class="para first">On paper this looked like a flow problem, the kind you fix at your desk by tidying screens and cutting steps. But the count fed the replenishment from headquarters, so a wrong number meant the wrong stock arrived: a store could end up short and lose sales, and a missing item could land on a storeman as a penalty. Real revenue and real people were riding on a process that moved at the speed of a manual count.</p>
+
+          <div class="eyebrow">The challenge</div>
+          <p class="para first">The instinct was to redesign the counting flow. I wasn't convinced the flow was the problem, so before I touched a screen I went to a store, and I went on its busiest day, so I could watch a storeman serve customers and count stock at the same time.</p>
+
+          <div class="eyebrow">The call</div>
+          <p class="para first">On the floor the real constraint showed itself in minutes: the warehouse had almost no internet, but the tool required a live connection to count, and a dropped signal could corrupt a count in progress. So instead of polishing the flow, I redesigned the model underneath it. I separated capturing the count from syncing it.</p>
+          <ul>
+            <li>A storeman gets the day's item list, taps <b>Start</b>, and the whole count runs locally, with no connectivity check that a weak signal could break.</li>
+            <li>Only at <b>Finish</b> does it reconcile against headquarters and surface mismatches for a restock-or-write-off decision.</li>
+            <li>Because I scoped it as store locally, sync once, rather than live sync, it was far cheaper to build than the team expected, which is how I got engineering behind it.</li>
+          </ul>
+
+          <div class="eyebrow">Outcome</div>
+          <p class="para first">Stocktaking went from about two and a half days to zero. No closure, no lost sales during the count. It prevented roughly $34K a month in lost GMV, recovered revenue, and brought data accuracy to 98.5% across 25 stores. It also took the penalty risk off the storemen. The rule I kept from it: the hard part of design isn't the craft, it's finding the right problem, and you only find it where the work actually happens.</p>
+
+          <div class="eyebrow">After</div>
+          <p class="para first">This became the first design blueprint I documented in full, and later taught to other designers in a workshop, so the way of working outlasted the one project.</p>
+        </div>
+
+        <div class="glance">
+          <div class="glance-title">At a glance</div>
+          <div class="glance-grid">
+            <div><div class="glance-v">2.5 days → 0</div><div class="glance-k">To count a store, no closure</div></div>
+            <div><div class="glance-v">98.5%</div><div class="glance-k">Data accuracy after</div></div>
+            <div><div class="glance-v">~$34K/mo</div><div class="glance-k">Lost GMV prevented</div></div>
+            <div><div class="glance-v">25 stores</div><div class="glance-k">Where it rolled out</div></div>
+          </div>
+        </div>
+
+        <div class="contacts">
+          <div class="contacts-row">
+            <a href="/case-studies">More case studies</a>
+            <a href="mailto:alim.akhsan@gmail.com">Email me</a>
+          </div>
+        </div>
+
+        <div class="footer">
+          <span class="copyright">© 2026 Ahmad Alim Akhsan</span>
+          <div class="toggles">
+            <button class="font-toggle" id="font-toggle" type="button">
+              <span class="ico" id="font-icon" aria-hidden="true"></span>
+            </button>
+            <button class="theme-toggle" id="theme-toggle" type="button">
+              <span class="ico" id="theme-icon" aria-hidden="true"></span>
+            </button>
+          </div>
+        </div>
+      </article>
+
+    </main>
+
+    <div class="backtotop-wrap">
+      <button class="back-to-top" id="back-to-top" type="button" aria-label="Back to top">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <path d="M12 19l0 -14"/><path d="M6 11l6 -6"/><path d="M18 11l-6 -6"/>
+        </svg>
+        <span>Back to top</span>
+      </button>
+    </div>
+  </div>
+<script src="/assets/case.js"></script>
+</body>
+</html>
