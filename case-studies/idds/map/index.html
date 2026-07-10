@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Interactive Indonesia map · IDDS prototype</title>
+<meta name="robots" content="noindex">
+<script>
+  /* Set theme before first paint (no flash), matching the parent case page. */
+  (function () {
+    try {
+      var s = localStorage.getItem("pf-theme-v2");
+      var d = (s === "dark" || s === "light") ? s
+        : (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", d);
+    } catch (e) { document.documentElement.setAttribute("data-theme", "light"); }
+  })();
+</script>
+<style>
+  /* Map chrome palette — mirrors the case study's own tokens (assets/case.css). */
+  :root, html[data-theme="light"] {
+    --c-canvas:#f3f1ec; --c-grid:rgba(20,18,10,.045);
+    --c-text:#1a1a18; --c-text2:#6f6d66; --c-muted:#9a988f;
+    --c-accent:#2f6df6;
+    /* chips mirror the case study's own chip tokens (assets/case.css) */
+    --c-chip-bg:#ffffff; --c-chip-bd:#e3e0d8; --c-chip-tx:#6f6d66;
+    --c-chip-shadow:0 1px 2px rgba(20,18,10,.05), 0 14px 30px -22px rgba(20,18,10,.45);
+  }
+  html[data-theme="dark"] {
+    --c-canvas:#0e0e0c; --c-grid:rgba(243,242,236,.035);
+    --c-text:#f3f2ec; --c-text2:#a4a299; --c-muted:#7c7a71;
+    --c-accent:#6f95ff;
+    --c-chip-bg:#201f1b; --c-chip-bd:#34332d; --c-chip-tx:#cbc9bf;
+    --c-chip-shadow:0 1px 2px rgba(0,0,0,.3), 0 16px 34px -24px rgba(0,0,0,.7);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; }
+  body {
+    background: var(--c-canvas);
+    font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    transition: background .25s ease;
+  }
+  #app { position: relative; width: 100%; height: 100%; overflow: hidden; }
+
+  .view { position: absolute; inset: 0; opacity: 0; transition: opacity .25s ease; }
+  .view.show { opacity: 1; }
+  /* Detail sits the map below the chips (padding) AND fades its top into the
+     canvas, so the province clears the label/back chips and its top edge melts
+     softly rather than being hard-cut. The gradient is pointer-events:none, so
+     the map underneath stays fully hoverable. */
+  .view.detail { padding-top: 74px; }
+  .topfade {
+    position: absolute; top: 0; left: 0; right: 0; height: 116px;
+    pointer-events: none; z-index: 3;
+    background: linear-gradient(to bottom, var(--c-canvas) 0%, var(--c-canvas) 30px, transparent 100%);
+  }
+
+  .grid-bg {
+    position: absolute; inset: 0; pointer-events: none;
+    background-size: 40px 40px;
+    background-image:
+      linear-gradient(var(--c-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--c-grid) 1px, transparent 1px);
+  }
+
+  svg.map { width: 100%; height: 100%; display: block; }
+  svg.map path { transition: fill .14s ease; }
+
+  /* Shared chip look — same tokens/shape as the case study's contact chips. */
+  .chip {
+    background: var(--c-chip-bg); border: 1px solid var(--c-chip-bd);
+    border-radius: 999px; box-shadow: var(--c-chip-shadow);
+  }
+  .overlay { position: absolute; pointer-events: none; }
+
+  .plabel { top: 20px; left: 50%; transform: translateX(-50%); z-index: 5; }
+  .plabel .inner { display: flex; align-items: center; gap: 10px; padding: 9px 16px; white-space: nowrap; }
+  .plabel .dot { width: 8px; height: 8px; border-radius: 999px; flex: 0 0 auto; }
+  .plabel .name { font-size: 14px; font-weight: 600; color: var(--c-text); }
+  .plabel .sep { font-size: 12px; color: var(--c-muted); }
+  .plabel .count { font-size: 12px; color: var(--c-text2); }
+
+  .back {
+    position: absolute; top: 20px; left: 20px; z-index: 5;
+    display: inline-flex; align-items: center; justify-content: center; line-height: 0;
+    min-width: 40px; min-height: 40px; padding: 9px; cursor: pointer;
+    color: var(--c-chip-tx); transition: color .15s, border-color .15s, transform .12s ease;
+  }
+  .back:hover { color: var(--c-accent); border-color: var(--c-accent); }
+  .back:active { transform: scale(.96); }
+  .back svg { width: 18px; height: 18px; display: block; }
+
+  .tip { position: absolute; pointer-events: none; z-index: 20; }
+  .tip .box { display: inline-flex; align-items: center; padding: 9px 16px; }
+  .tip .head { display: flex; align-items: center; gap: 8px; }
+  .tip .dot { width: 8px; height: 8px; border-radius: 999px; flex: 0 0 auto; }
+  .tip .name { font-size: 14px; font-weight: 600; color: var(--c-text); white-space: nowrap; }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script src="paths.js"></script>
+  <script src="regions.js"></script>
+  <script>
+  (function () {
+    "use strict";
+    var SVGNS = "http://www.w3.org/2000/svg";
+    var svgPaths = window.__svgPaths;
+    var allRegions = window.__allRegions;
+    var provinceBboxes = window.__provinceBboxes;
+
+    // ─── SVG dimensions ──────────────────────────────────────────────
+    var MAP_W = 818.1, MAP_H = 353.47;
+    var PROV_W = 792.546, PROV_H = 316.664;
+
+    // ─── Per-theme colors for SVG fills set in JS (chrome uses CSS vars) ──
+    var PALETTE = {
+      light: { stroke: "#f3f1ec", land: "#e6e2d8", landStroke: "#dcd8cd" },
+      dark:  { stroke: "#0e0e0c", land: "#201f1b", landStroke: "#2a2a26" }
+    };
+    var THEME = PALETTE[document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light"];
+
+    // ─── Province data (English display names; sample color values) ──
+    var provinces = [
+      { id: "ID-AC", en: "Aceh", provinceName: "Aceh", region: "Sumatra", value: 38.2, pathKey: "p3b3e1a10" },
+      { id: "ID-SU", en: "North Sumatra", provinceName: "Sumatera Utara", region: "Sumatra", value: 45.9, pathKey: "p85e6ec0" },
+      { id: "ID-SB", en: "West Sumatra", provinceName: "Sumatera Barat", region: "Sumatra", value: 43.2, pathKey: "p26e64b00" },
+      { id: "ID-RI", en: "Riau", provinceName: "Riau", region: "Sumatra", value: 87.6, pathKey: "p1a1aa900" },
+      { id: "ID-KR", en: "Riau Islands", provinceName: "Kepulauan Riau", region: "Sumatra", value: 52.1, pathKey: "p1ff63880" },
+      { id: "ID-JA", en: "Jambi", provinceName: "Jambi", region: "Sumatra", value: 41.7, pathKey: "p26eff400" },
+      { id: "ID-SS", en: "South Sumatra", provinceName: "Sumatera Selatan", region: "Sumatra", value: 45.8, pathKey: "p7664cc0" },
+      { id: "ID-BE", en: "Bengkulu", provinceName: "Bengkulu", region: "Sumatra", value: 33.8, pathKey: "p3a7a980" },
+      { id: "ID-BB", en: "Bangka Belitung", provinceName: "Kepulauan Bangka Belitung", region: "Sumatra", value: 45.3, pathKey: "p307d3700" },
+      { id: "ID-LA", en: "Lampung", provinceName: "Lampung", region: "Sumatra", value: 34.1, pathKey: "p18001a20" },
+      { id: "ID-BT", en: "Banten", provinceName: "Banten", region: "Java", value: 48.9, pathKey: "p13b7400" },
+      { id: "ID-JK", en: "Jakarta", provinceName: "DKI Jakarta", region: "Java", value: 178.3, pathKey: "p4806d00" },
+      { id: "ID-JB", en: "West Java", provinceName: "Jawa Barat", region: "Java", value: 37.4, pathKey: "p28ea67b0" },
+      { id: "ID-JT", en: "Central Java", provinceName: "Jawa Tengah", region: "Java", value: 41.2, pathKey: "p21294180" },
+      { id: "ID-YO", en: "Yogyakarta", provinceName: "DI Yogyakarta", region: "Java", value: 32.7, pathKey: "p357706f0" },
+      { id: "ID-JI", en: "East Java", provinceName: "Jawa Timur", region: "Java", value: 44.8, pathKey: "p2779e000" },
+      { id: "ID-KB", en: "West Kalimantan", provinceName: "Kalimantan Barat", region: "Kalimantan", value: 30.5, pathKey: "p2bd04c00" },
+      { id: "ID-KT", en: "Central Kalimantan", provinceName: "Kalimantan Tengah", region: "Kalimantan", value: 38.9, pathKey: "p3e0c8000" },
+      { id: "ID-KS", en: "South Kalimantan", provinceName: "Kalimantan Selatan", region: "Kalimantan", value: 39.6, pathKey: "p30e21972" },
+      { id: "ID-KI", en: "East Kalimantan", provinceName: "Kalimantan Timur", region: "Kalimantan", value: 68.4, pathKey: "pe335000" },
+      { id: "ID-KU", en: "North Kalimantan", provinceName: "Kalimantan Utara", region: "Kalimantan", value: 55.2, pathKey: "p3d75ab00" },
+      { id: "ID-BA", en: "Bali", provinceName: "Bali", region: "Nusa Tenggara", value: 62.1, pathKey: "p35342580" },
+      { id: "ID-NB", en: "West Nusa Tenggara", provinceName: "Nusa Tenggara Barat", region: "Nusa Tenggara", value: 28.9, pathKey: "p1997a300" },
+      { id: "ID-NT", en: "East Nusa Tenggara", provinceName: "Nusa Tenggara Timur", region: "Nusa Tenggara", value: 22.3, pathKey: "p5c00d80" },
+      { id: "ID-SA", en: "North Sulawesi", provinceName: "Sulawesi Utara", region: "Sulawesi", value: 47.3, pathKey: "p28b82f80" },
+      { id: "ID-GO", en: "Gorontalo", provinceName: "Gorontalo", region: "Sulawesi", value: 35.2, pathKey: "p1e7da480" },
+      { id: "ID-ST", en: "Central Sulawesi", provinceName: "Sulawesi Tengah", region: "Sulawesi", value: 38.7, pathKey: "p23b38900" },
+      { id: "ID-SR", en: "West Sulawesi", provinceName: "Sulawesi Barat", region: "Sulawesi", value: 31.5, pathKey: "p10a90100" },
+      { id: "ID-SN", en: "South Sulawesi", provinceName: "Sulawesi Selatan", region: "Sulawesi", value: 48.1, pathKey: "p43b4c80" },
+      { id: "ID-SG", en: "Southeast Sulawesi", provinceName: "Sulawesi Tenggara", region: "Sulawesi", value: 44.5, pathKey: "p2290db80" },
+      { id: "ID-MU", en: "North Maluku", provinceName: "Maluku Utara", region: "Maluku", value: 31.8, pathKey: "p25ad9620" },
+      { id: "ID-MA", en: "Maluku", provinceName: "Maluku", region: "Maluku", value: 32.4, pathKey: "p33d4ab70" },
+      { id: "ID-PB", en: "West Papua", provinceName: "Papua Barat", region: "Papua", value: 41.2, pathKey: "pd153780" },
+      { id: "ID-PA", en: "Papua", provinceName: "Papua", region: "Papua", value: 58.7, pathKey: "p25790500" }
+    ];
+
+    var neighborRegions = [
+      { id: "TL", pathKey: "p392a400" },
+      { id: "MY-12", pathKey: "p2d15c600" },
+      { id: "MY-13", pathKey: "p35d99970" },
+      { id: "BN", pathKey: "p2a7c1280" }
+    ];
+
+    // Drill-down keeps each province's own choropleth color, so the color a
+    // reader clicks on the overview is the color they land in. Jakarta only
+    // needs friendlier English labels for its municipalities.
+    var JAKARTA_CITY_NAMES = {
+      "Kota_Jakarta_Barat":   "West Jakarta",
+      "Kota_Jakarta_Pusat":   "Central Jakarta",
+      "Kota_Jakarta_Selatan": "South Jakarta",
+      "Kota_Jakarta_Timur":   "East Jakarta",
+      "Kota_Jakarta_Utara":   "North Jakarta"
+    };
+
+    // ─── Choropleth helpers ──────────────────────────────────────────
+    function lerp(a, b, t) { return a + (b - a) * t; }
+    var C_LOW = [30, 69, 110], C_MID = [14, 165, 233], C_HIGH = [52, 211, 153];
+    var V_MIN = 22.3, V_MAX = 178.3;
+
+    function choroplethColor(value, hovered) {
+      var t = Math.max(0, Math.min(1, (value - V_MIN) / (V_MAX - V_MIN)));
+      var r, g, b, tt;
+      if (t < 0.5) {
+        tt = t * 2;
+        r = lerp(C_LOW[0], C_MID[0], tt); g = lerp(C_LOW[1], C_MID[1], tt); b = lerp(C_LOW[2], C_MID[2], tt);
+      } else {
+        tt = (t - 0.5) * 2;
+        r = lerp(C_MID[0], C_HIGH[0], tt); g = lerp(C_MID[1], C_HIGH[1], tt); b = lerp(C_MID[2], C_HIGH[2], tt);
+      }
+      if (hovered) { r = lerp(r, 255, 0.3); g = lerp(g, 255, 0.3); b = lerp(b, 255, 0.3); }
+      return "rgb(" + Math.round(r) + "," + Math.round(g) + "," + Math.round(b) + ")";
+    }
+
+    function el(tag, attrs, cls) {
+      var n = document.createElement(tag);
+      if (cls) n.className = cls;
+      if (attrs) for (var k in attrs) n.setAttribute(k, attrs[k]);
+      return n;
+    }
+    function svgEl(tag, attrs) {
+      var n = document.createElementNS(SVGNS, tag);
+      if (attrs) for (var k in attrs) n.setAttribute(k, attrs[k]);
+      return n;
+    }
+
+    // Position a tooltip near (x,y) inside the frame, flipping/clamping so it
+    // never spills past the edges (measures the rendered box, not a guess).
+    function placeTip(tip, x, y, frameW, frameH, topInset) {
+      topInset = topInset || 0;
+      var box = tip.firstElementChild;
+      if (!box) return;
+      var tw = box.offsetWidth, th = box.offsetHeight;
+      var left = x + 16;
+      if (left + tw > frameW - 8) left = x - tw - 16;      // flip to cursor's left
+      left = Math.max(8, Math.min(left, frameW - tw - 8));
+      var top = y - th - 12;                               // sit above the cursor
+      if (top < topInset + 8) top = y + 18;                // no room above → below
+      top = Math.max(topInset + 8, Math.min(top, frameH - th - 8));
+      tip.style.left = left + "px";
+      tip.style.top = top + "px";
+    }
+
+    // A viewBox [x,y,w,h] = the bbox plus padding, at its natural aspect.
+    // preserveAspectRatio="meet" then fits & centers it in the frame.
+    function viewBoxFor(bx, by, bw, bh, pad) {
+      var px = bw * pad, py = bh * pad;
+      return [bx - px, by - py, bw + 2 * px, bh + 2 * py];
+    }
+    // Tight bbox [x,y,w,h] around a set of regions (uses each region's own bbox).
+    function unionBBox(regions) {
+      var minx = Infinity, miny = Infinity, maxx = -Infinity, maxy = -Infinity;
+      regions.forEach(function (r) {
+        var b = r.bbox; if (!b) return;
+        if (b[0] < minx) minx = b[0];
+        if (b[1] < miny) miny = b[1];
+        if (b[0] + b[2] > maxx) maxx = b[0] + b[2];
+        if (b[1] + b[3] > maxy) maxy = b[1] + b[3];
+      });
+      return isFinite(minx) ? [minx, miny, maxx - minx, maxy - miny] : null;
+    }
+    function setVB(svg, vb) { svg.setAttribute("viewBox", vb.join(" ")); }
+
+    var app = document.getElementById("app");
+
+    // ─── Overview: Indonesia choropleth ──────────────────────────────
+    function renderOverview() {
+      var root = el("div", null, "view");
+      root.appendChild(el("div", null, "grid-bg"));
+
+      var svg = svgEl("svg", {
+        "class": "map",
+        viewBox: "0 0 " + PROV_W + " " + PROV_H,
+        preserveAspectRatio: "xMidYMid meet"
+      });
+
+      var defs = svgEl("defs");
+      var filter = svgEl("filter", { id: "ind-glow" });
+      var blur = svgEl("feGaussianBlur", { stdDeviation: "1.5", result: "blur" });
+      var merge = svgEl("feMerge");
+      merge.appendChild(svgEl("feMergeNode", { "in": "blur" }));
+      merge.appendChild(svgEl("feMergeNode", { "in": "SourceGraphic" }));
+      filter.appendChild(blur); filter.appendChild(merge); defs.appendChild(filter);
+      svg.appendChild(defs);
+
+      var g = svgEl("g");
+      neighborRegions.forEach(function (r) {
+        g.appendChild(svgEl("path", { d: svgPaths[r.pathKey], fill: THEME.land, stroke: THEME.landStroke, "stroke-width": "0.5" }));
+      });
+
+      var hoveredId = null;
+      var provPaths = {};
+      provinces.forEach(function (prov) {
+        var p = svgEl("path", {
+          d: svgPaths[prov.pathKey],
+          fill: choroplethColor(prov.value, false),
+          stroke: THEME.stroke,
+          "stroke-width": "0.4",
+          style: "cursor:pointer"
+        });
+        provPaths[prov.id] = p;
+        p.addEventListener("mouseenter", function () { setHover(prov.id); });
+        p.addEventListener("mouseleave", function () { setHover(null); });
+        p.addEventListener("click", function () { goTo({ type: "detail", name: prov.provinceName, label: prov.en, value: prov.value }); });
+        g.appendChild(p);
+      });
+      svg.appendChild(g);
+      root.appendChild(svg);
+
+      var tip = el("div", null, "tip hidden");
+      root.appendChild(tip);
+
+      function setHover(id) {
+        if (id === hoveredId) return;
+        if (hoveredId && provPaths[hoveredId]) {
+          var prev = byId(hoveredId);
+          provPaths[hoveredId].setAttribute("fill", choroplethColor(prev.value, false));
+          provPaths[hoveredId].setAttribute("stroke-width", "0.4");
+          provPaths[hoveredId].removeAttribute("filter");
+        }
+        hoveredId = id;
+        if (id && provPaths[id]) {
+          var prov = byId(id);
+          provPaths[id].setAttribute("fill", choroplethColor(prov.value, true));
+          provPaths[id].setAttribute("stroke-width", "0.8");
+          provPaths[id].setAttribute("filter", "url(#ind-glow)");
+          tip.classList.remove("hidden");
+          tip.innerHTML =
+            '<div class="box chip">' +
+              '<div class="head"><span class="dot" style="background:' + choroplethColor(prov.value, false) + '"></span>' +
+              '<span class="name">' + prov.en + '</span></div>' +
+            '</div>';
+        } else {
+          tip.classList.add("hidden");
+        }
+      }
+      function byId(id) { for (var i = 0; i < provinces.length; i++) if (provinces[i].id === id) return provinces[i]; return null; }
+
+      svg.addEventListener("mousemove", function (e) {
+        if (tip.classList.contains("hidden")) return;
+        var r = svg.getBoundingClientRect();
+        placeTip(tip, e.clientX - r.left, e.clientY - r.top, r.width, r.height);
+      });
+      svg.addEventListener("mouseleave", function () { setHover(null); });
+
+      return { root: root };
+    }
+
+    // ─── Detail: province drill-down (kabupaten / kota) ──────────────
+    function renderDetail(provinceName, displayName, provValue) {
+      var root = el("div", null, "view detail");
+      var isJakarta = provinceName === "DKI Jakarta";
+      var label = displayName || provinceName;
+      var provColor = choroplethColor(provValue, false);
+      var provColorHover = choroplethColor(provValue, true);
+
+      root.appendChild(el("div", null, "grid-bg"));
+
+      var svg = svgEl("svg", { "class": "map", preserveAspectRatio: "xMidYMid meet" });
+
+      var defs = svgEl("defs");
+      var filter = svgEl("filter", { id: "pd-glow" });
+      var blur = svgEl("feGaussianBlur", { stdDeviation: "0.6", result: "blur" });
+      var merge = svgEl("feMerge");
+      merge.appendChild(svgEl("feMergeNode", { "in": "blur" }));
+      merge.appendChild(svgEl("feMergeNode", { "in": "SourceGraphic" }));
+      filter.appendChild(blur); filter.appendChild(merge); defs.appendChild(filter);
+      svg.appendChild(defs);
+
+      function inProvince(r) {
+        if (r.province !== provinceName) return false;
+        if (isJakarta && r.id === "Kepulauan_Seribu") return false;
+        return true;
+      }
+      function baseFill(r) {
+        if (r.province !== provinceName) return THEME.land;
+        if (isJakarta && r.id === "Kepulauan_Seribu") return THEME.land;
+        return provColor;
+      }
+      function hoverFill() { return provColorHover; }
+
+      var provRegions = allRegions.filter(inProvince);
+      var hoveredId = null;
+      var regionPaths = {};
+
+      // Frame the regions we actually render (excludes e.g. Jakarta's far-north
+      // Kepulauan Seribu) so the province sits centered. Jakarta is a small,
+      // dense cluster, so it gets more breathing room than a normal province.
+      var provBox = unionBBox(provRegions) || provinceBboxes[provinceName];
+      var pad = isJakarta ? 0.32 : 0.1;
+      var targetVB = provBox ? viewBoxFor(provBox[0], provBox[1], provBox[2], provBox[3], pad) : [0, 0, MAP_W, MAP_H];
+      // Keep borders a consistent hairline regardless of how far we zoom.
+      var strokeW = Math.max(0.03, targetVB[2] * 0.0011).toFixed(3);
+
+      allRegions.forEach(function (r) {
+        var p = svgEl("path", {
+          d: r.path, fill: baseFill(r), stroke: THEME.stroke, "stroke-width": strokeW,
+          style: "cursor:default"
+        });
+        regionPaths[r.id] = p;
+        if (inProvince(r)) {
+          p.addEventListener("mouseenter", function () { setHover(r.id); });
+          p.addEventListener("mouseleave", function () { setHover(null); });
+        }
+        svg.appendChild(p);
+      });
+      root.appendChild(svg);
+      setVB(svg, targetVB);
+      root.appendChild(el("div", null, "topfade"));   // soft fade under the chips
+
+      var back = el("button", { "aria-label": "Back to Indonesia", title: "Back to Indonesia" }, "back chip");
+      back.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l14 0"/><path d="M5 12l6 6"/><path d="M5 12l6 -6"/></svg>';
+      back.addEventListener("click", function () { goTo({ type: "overview" }); });
+      root.appendChild(back);
+
+      var labelEl = el("div", null, "overlay plabel");
+      var unit = isJakarta ? "Cities" : "Regencies & cities";
+      labelEl.innerHTML =
+        '<div class="inner chip"><span class="dot" style="background:' + provColor + '"></span>' +
+        '<span class="name">' + label + '</span><span class="sep">·</span>' +
+        '<span class="count">' + provRegions.length + ' ' + unit + '</span></div>';
+      root.appendChild(labelEl);
+
+      var tip = el("div", null, "tip hidden");
+      root.appendChild(tip);
+
+      function setHover(id) {
+        if (id === hoveredId) return;
+        if (hoveredId && regionPaths[hoveredId]) {
+          var pr = regionById(hoveredId);
+          regionPaths[hoveredId].setAttribute("fill", baseFill(pr));
+          regionPaths[hoveredId].removeAttribute("filter");
+        }
+        hoveredId = id;
+        if (id && regionPaths[id]) {
+          var r = regionById(id);
+          regionPaths[id].setAttribute("fill", hoverFill());
+          regionPaths[id].setAttribute("filter", "url(#pd-glow)");
+          var rname = (isJakarta && JAKARTA_CITY_NAMES[r.id]) ? JAKARTA_CITY_NAMES[r.id] : r.name;
+          tip.classList.remove("hidden");
+          tip.innerHTML = '<div class="box chip">' +
+            '<div class="head"><span class="dot" style="background:' + provColor + '"></span>' +
+            '<span class="name">' + rname + '</span></div></div>';
+        } else {
+          tip.classList.add("hidden");
+        }
+      }
+      function regionById(id) { for (var i = 0; i < allRegions.length; i++) if (allRegions[i].id === id) return allRegions[i]; return null; }
+
+      // Tip is positioned relative to the whole view; keep it clear of the top
+      // chip band (the svg itself is inset below that band).
+      svg.addEventListener("mousemove", function (e) {
+        if (tip.classList.contains("hidden")) return;
+        var rect = root.getBoundingClientRect();
+        placeTip(tip, e.clientX - rect.left, e.clientY - rect.top, rect.width, rect.height, 74);
+      });
+      svg.addEventListener("mouseleave", function () { setHover(null); });
+
+      return { root: root };
+    }
+
+    // ─── View management + transitions ───────────────────────────────
+    var currentSpec = { type: "overview" };
+    var currentView = null;
+
+    function buildView(spec) {
+      return spec.type === "overview" ? renderOverview() : renderDetail(spec.name, spec.label, spec.value);
+    }
+    function renderCurrent(instant) {
+      var old = currentView;
+      var v = buildView(currentSpec);
+      currentView = v;
+      app.appendChild(v.root);
+      if (instant) {
+        v.root.classList.add("show");
+        if (old && old.root.parentNode) old.root.parentNode.removeChild(old.root);
+      } else {
+        if (old) {
+          old.root.classList.remove("show");
+          setTimeout(function () { if (old.root.parentNode) old.root.parentNode.removeChild(old.root); }, 300);
+        }
+        requestAnimationFrame(function () { v.root.classList.add("show"); });
+      }
+    }
+    function goTo(spec) { currentSpec = spec; renderCurrent(false); }
+
+    // ─── Theme sync with parent case page (same-origin localStorage) ──
+    function detectTheme() {
+      try {
+        var s = localStorage.getItem("pf-theme-v2");
+        if (s === "dark" || s === "light") return s;
+      } catch (e) {}
+      return (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
+    }
+    function applyTheme(name) {
+      if (name !== "dark" && name !== "light") return;
+      var cur = document.documentElement.getAttribute("data-theme");
+      if (name === cur) return;
+      document.documentElement.setAttribute("data-theme", name);
+      THEME = PALETTE[name];
+      renderCurrent(true); // repaint SVG fills for the new palette
+    }
+    // Parent writes pf-theme-v2 on toggle → storage event fires here (cross-document).
+    window.addEventListener("storage", function (e) {
+      if (e.key === "pf-theme-v2" || e.key === null) applyTheme(detectTheme());
+    });
+    // OS scheme change, only when the visitor hasn't set a manual override.
+    if (window.matchMedia) {
+      var mq = window.matchMedia("(prefers-color-scheme: dark)");
+      var onScheme = function () {
+        var s = null; try { s = localStorage.getItem("pf-theme-v2"); } catch (e) {}
+        if (s !== "dark" && s !== "light") applyTheme(detectTheme());
+      };
+      if (mq.addEventListener) mq.addEventListener("change", onScheme);
+      else if (mq.addListener) mq.addListener(onScheme);
+    }
+
+    // Safety net: if a storage event is ever missed, a light poll keeps the
+    // map's theme in step with the parent page's choice.
+    setInterval(function () { applyTheme(detectTheme()); }, 1000);
+
+    renderCurrent(true);
+  })();
+  </script>
+</body>
+</html>

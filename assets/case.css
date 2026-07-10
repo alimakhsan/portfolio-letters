@@ -206,6 +206,15 @@ html[data-theme="dark"] .sheet::before { mix-blend-mode: screen; opacity: .15; }
   text-wrap: pretty;
 }
 
+/* ---- embedded live prototype (iframe), matches .figure treatment ---- */
+.embed-wrap {
+  position: relative; width: 100%; aspect-ratio: 16 / 10;
+  border-radius: 6px; overflow: hidden;
+  border: 1px solid var(--border); background: var(--card);
+  box-shadow: 0 1px 2px rgba(20,18,10,.04), 0 18px 40px -26px rgba(20,18,10,.32);
+}
+.embed-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
 /* ---- testimonials as quotes (leadership: personal, letter-like) ---- */
 .says { margin-top: 6px; }
 .say {
