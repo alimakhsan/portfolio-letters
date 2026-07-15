@@ -270,7 +270,7 @@ html[data-theme="dark"] .sheet::before { mix-blend-mode: screen; opacity: .15; }
 .study-list { margin-top: clamp(30px, 4vw, 46px); }
 .study-row {
   display: block; text-decoration: none; color: var(--text);
-  padding: 26px 0; border-top: 1px solid var(--divider);
+  padding: 13px 0; border-top: 1px solid var(--divider);
   transition: color .15s;
 }
 .study-row:first-child { border-top: none; padding-top: 0; }
@@ -279,11 +279,16 @@ html[data-theme="dark"] .sheet::before { mix-blend-mode: screen; opacity: .15; }
   font-variant-numeric: tabular-nums;
 }
 .study-title {
-  font-weight: 600; font-size: clamp(22px, 3.4vw, 28px); line-height: 1.18;
-  letter-spacing: -0.02em; color: var(--text); margin: 6px 0 0;
-  display: flex; align-items: center; justify-content: space-between; gap: 18px;
-  transition: color .15s;
+  font-size: 18px; line-height: 1.5;
+  letter-spacing: -0.01em; color: var(--text); margin: 0;
+  display: block; transition: color .15s;
 }
+.study-nm { font-weight: 600; color: var(--text); }
+.study-desc { font-weight: 400; color: var(--text2); }
+.study-row:hover .study-nm,
+.study-row:hover .study-desc { color: var(--accent); }
+.study-row.is-soon .study-nm,
+.study-row.is-soon .study-desc { color: var(--muted); }
 /* cap the text width so every title breaks to two balanced lines, for a
    consistent rhythm down the list (the arrow stays right-aligned). */
 .study-titletext { max-width: 30ch; text-wrap: balance; }
