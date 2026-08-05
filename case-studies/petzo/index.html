@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en"
+      data-scene-light="https://images.unsplash.com/photo-1428908728789-d2de25dbd4e2?auto=format&fit=crop&w=2000&q=80"
+      data-scene-dark="https://images.unsplash.com/photo-1574610758891-5b809b6e6e2e?auto=format&fit=crop&w=2000&q=80">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Petzo · Case study · Ahmad Alim Akhsan</title>
+<meta name="description" content="An investor wanted a usable product, not a Figma file. I built Petzo, a pet-care marketplace, solo with AI: catalog and checkout in a week, full MVP in under a month, 3 to 11 pet shops onboarded.">
+<link rel="canonical" href="https://ahmadalim.com/case-studies/petzo">
+
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Ahmad Alim Akhsan">
+<meta property="og:title" content="Petzo · Case study">
+<meta property="og:description" content="A pet-care marketplace built solo with AI after an investor asked for a real product: designer, PM, and builder, full MVP in under a month.">
+<meta property="og:url" content="https://ahmadalim.com/case-studies/petzo">
+<meta property="og:image" content="https://ahmadalim.com/assets/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ahmadalim.com/assets/og-image.jpg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Critical: Hanken Grotesk (default body font) stays on the render path. -->
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Non-critical: Mono/Serif only appear after a typeface toggle, so load them
+     off the critical path (not shown at first paint, so no layout shift). -->
+<link rel="stylesheet" media="print" onload="this.media='all'"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Lora:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Lora:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"></noscript>
+<link rel="stylesheet" href="/assets/case.css">
+</head>
+<body>
+  <div class="page">
+    <h1 class="sr-only">Petzo case study by Ahmad Alim Akhsan.</h1>
+    <div class="scene" id="scene" aria-hidden="true"></div>
+
+    <main class="main">
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a href="/">Ahmad Alim Akhsan</a>
+        <span class="crumb-sep" aria-hidden="true">/</span>
+        <a href="/case-studies">Case studies</a>
+        <span class="crumb-sep" aria-hidden="true">/</span>
+        <span class="crumb-current" aria-current="page">Petzo</span>
+      </nav>
+
+      <article class="sheet">
+        <div class="meta">
+          <span class="meta-place">2025</span>
+          <span class="meta-no">AI build</span>
+        </div>
+
+        <div class="body">
+          <div class="salutation">An investor asked for a real product, so I stopped designing and built it</div>
+          <p class="lede">Petzo is a pet-care marketplace in Indonesia: clinics, pet hotels, and pet food in one place. I had already spent about a week designing it in Figma when the founder's investor said the thing every designer eventually hears, that a picture of a product cannot be used, pitched, or tested. So I put Figma down and built it, alone, with AI. Catalog and checkout in a week. The full MVP in under a month.</p>
+
+          <blockquote class="quote"><span>The fastest MVP isn't the one you build. It's the one where you wire together what already exists and build only the ten percent that's actually yours.</span></blockquote>
+
+          <div class="eyebrow first">Context</div>
+          <p class="para first">An early-stage founder needed something an investor and a pet shop could both react to. My Figma file was not it. You cannot hand a static screen to a shop owner at an event and learn whether they would sign up, and you cannot put a prototype in front of an investor and have it count as a product. That week of design was not wasted, but it had reached the limit of what a picture can answer.</p>
+
+          <!-- CRAFT IMAGE. Activate when ready:
+               Export the catalog / discovery screen to /assets/case/petzo-home.jpg, then remove this comment wrapper.
+          <figure class="figure">
+            <img src="/assets/case/petzo-home.jpg" alt="Petzo catalog screen: pet-care services across clinics, pet hotels, and pet food" loading="lazy">
+            <figcaption>The catalog, running rather than mocked up: clinics, hotels, and food across one browsable set of categories.</figcaption>
+          </figure>
+          END CRAFT IMAGE -->
+
+          <div class="eyebrow">My role</div>
+          <p class="para first">Designer, PM, and builder. Nobody else was going to scope this, so I owned what went in and what stayed out, then executed the whole product on AI with barely a Figma file in sight. It was the first time I took a product all the way through that way, and the founder gave me the room to try it.</p>
+
+          <div class="eyebrow">The call</div>
+          <p class="para first">The temptation with a marketplace MVP is to build the marketplace. I scoped it the other way, by asking which parts of this product were genuinely ours:</p>
+          <ul>
+            <li><b>Payments</b>: not ours. Redirect to a payment gateway rather than build a checkout stack.</li>
+            <li><b>Notifications</b>: not ours. Order confirmation over WhatsApp, where Indonesian shop owners and customers already live.</li>
+            <li><b>The catalog, the booking, the admin</b>: ours. That is roughly ten percent of a marketplace, and it is the only part worth spending a month on.</li>
+          </ul>
+          <p class="para">That decision is what made the timeline possible. The foundation, a catalog across categories plus the checkout flow, took about a week. The full MVP, including an admin dashboard so the shop could manage order status, landed in under a month.</p>
+
+          <!-- CRAFT IMAGE. Activate when ready:
+               Export the booking or admin dashboard screen to /assets/case/petzo-booking.jpg, then remove this comment wrapper.
+          <figure class="figure">
+            <img src="/assets/case/petzo-booking.jpg" alt="Petzo booking flow and the admin dashboard used to manage order status" loading="lazy">
+            <figcaption>Booking through to the admin dashboard: the part that was actually ours to build.</figcaption>
+          </figure>
+          END CRAFT IMAGE -->
+
+          <div class="eyebrow">What it did once it was real</div>
+          <p class="para first">Petzo launched at Indonesia's biggest pet event, and the founder used the live product to talk to prospective investors and partners. Pet-shop onboarding went from 3 to 11, off a base of almost nothing, and the unlock was simply having something a shop owner could hold instead of imagine. Then the loop got interesting. Partners started bringing real operational detail, one shop already ran its own scheduling, another exposed a gap between two services we had treated as one, and because the build was fast we could turn that input into an updated product to show them the next day. Business development stopped being a demo and became an iteration cycle.</p>
+
+          <div class="eyebrow">What I learned</div>
+          <p class="para first">AI did not make me a faster designer. It moved me from designing screens to validating the business, which is a different job with a different scarce skill. The production gap is closing; the judgment gap is not. What still had to come from me was deciding what not to build, reading a partner's operational reality correctly, and knowing which ten percent was worth owning. That is also where design and engineering stop being two rooms: when the person making the call can also ship the thing, the argument gets settled by the product rather than by a handoff.</p>
+        </div>
+
+        <div class="glance">
+          <div class="glance-title">At a glance</div>
+          <div class="glance-grid">
+            <div><div class="glance-v">&lt;1 month</div><div class="glance-k">Figma file to full MVP</div></div>
+            <div><div class="glance-v">3 → 11</div><div class="glance-k">Pet shops onboarded after launch</div></div>
+            <div><div class="glance-v">~10%</div><div class="glance-k">Of the product actually built custom</div></div>
+            <div><div class="glance-v">1 person</div><div class="glance-k">Designer, PM, and builder</div></div>
+          </div>
+        </div>
+
+        <div class="contacts">
+          <div class="contacts-row">
+            <a href="/case-studies">More case studies</a>
+            <a href="mailto:alim.akhsan@gmail.com">Email me</a>
+          </div>
+        </div>
+
+        <div class="footer">
+          <span class="copyright">© 2026 Ahmad Alim Akhsan</span>
+          <div class="toggles">
+            <button class="font-toggle" id="font-toggle" type="button">
+              <span class="ico" id="font-icon" aria-hidden="true"></span>
+            </button>
+            <button class="theme-toggle" id="theme-toggle" type="button">
+              <span class="ico" id="theme-icon" aria-hidden="true"></span>
+            </button>
+          </div>
+        </div>
+      </article>
+
+    </main>
+
+    <div class="backtotop-wrap">
+      <button class="back-to-top" id="back-to-top" type="button" aria-label="Back to top">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <path d="M12 19l0 -14"/><path d="M6 11l6 -6"/><path d="M18 11l-6 -6"/>
+        </svg>
+        <span>Back to top</span>
+      </button>
+    </div>
+  </div>
+<script src="/assets/case.js"></script>
+</body>
+</html>
