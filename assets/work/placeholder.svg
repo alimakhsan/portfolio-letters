@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500" role="img" aria-hidden="true">
+  <!-- Neutral, theme-agnostic thumbnail placeholder. Mid-grey at low opacity
+       so it sits calmly on both the light and dark card background. -->
+  <g fill="none" stroke="#9a988f" stroke-opacity="0.34" stroke-width="2">
+    <rect x="286" y="176" width="228" height="148" rx="10"/>
+    <path d="M286 282l52-46 44 38 46-52 86 72" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <circle cx="352" cy="216" r="13" fill="#9a988f" fill-opacity="0.34"/>
+  <text x="400" y="368" text-anchor="middle"
+        font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif"
+        font-size="18" font-weight="500" letter-spacing="2.4"
+        fill="#9a988f" fill-opacity="0.6">THUMBNAIL</text>
+</svg>

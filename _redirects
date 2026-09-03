@@ -1,6 +1,9 @@
-# Case studies now live on-site at /case-studies (was a Notion redirect).
-# /work stays as an internal alias to the on-site index.
-/work           /case-studies                                                       301
+# Case studies are being rewritten. The pages stay in the repo but the path is
+# closed for now: both /work and anything under /case-studies land on the home
+# page. 302 (not 301) so browsers don't cache this once the rewrite ships.
+/work            /                                                                  302
+/case-studies    /                                                                  302
+/case-studies/*  /                                                                  302
 
 # Vanity shortcuts → easy to share/print on a CV
 /resume    https://drive.google.com/file/d/1da_bE8hjolrlx4vTK_qn_eX3nBk5uZwS/view   301

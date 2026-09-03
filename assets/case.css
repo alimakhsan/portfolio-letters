@@ -374,3 +374,61 @@ html[data-theme="dark"] .sheet::before { mix-blend-mode: screen; opacity: .15; }
   .intro .contacts  { animation-delay: .12s; }
   .intro .glance    { animation-delay: .12s; }
 }
+
+/* ---- index: work grid with thumbnails ----
+   Cards are whole-area links; the thumb keeps a fixed ratio so a row of
+   mixed-length titles still lines up. Swap the placeholder <img> src for a
+   real screenshot and nothing else needs to change. */
+.work-grid {
+  margin-top: clamp(26px, 3.4vw, 38px);
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: clamp(22px, 3vw, 34px) clamp(18px, 2.4vw, 26px);
+}
+.work-card {
+  display: flex; flex-direction: column; gap: 12px;
+  text-decoration: none; color: var(--text);
+}
+.work-thumb {
+  position: relative; aspect-ratio: 16 / 10; overflow: hidden;
+  border-radius: 6px; border: 1px solid var(--border); background: var(--card);
+  box-shadow: 0 1px 2px rgba(20,18,10,.04), 0 18px 40px -30px rgba(20,18,10,.34);
+  transition: border-color .18s, box-shadow .18s;
+}
+.work-thumb img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; display: block;
+  transition: transform .35s cubic-bezier(.2,0,0,1);
+}
+.work-card:hover .work-thumb { border-color: var(--accent); }
+.work-card:hover .work-thumb img { transform: scale(1.03); }
+.work-card:focus-visible { outline: none; }
+.work-card:focus-visible .work-thumb {
+  outline: 2px solid var(--accent); outline-offset: 3px;
+}
+/* placeholder tint so an empty thumb still reads as a slot, not a broken box */
+.work-thumb.is-placeholder {
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--accent) 7%, var(--card)),
+    var(--card) 70%);
+}
+.work-nm {
+  font-size: 18px; font-weight: 600; line-height: 1.35;
+  letter-spacing: -0.01em; color: var(--text); transition: color .15s;
+}
+.work-desc {
+  font-size: 15px; line-height: 1.55; color: var(--text2);
+  margin-top: 5px; text-wrap: pretty;
+}
+.work-card:hover .work-nm { color: var(--accent); }
+.work-tag {
+  display: inline-block; margin-bottom: 6px;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--muted);
+}
+@media (prefers-reduced-motion: reduce) {
+  .work-thumb img { transition: none; }
+  .work-card:hover .work-thumb img { transform: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .intro .work-grid { animation: letterIn .5s cubic-bezier(.2,0,0,1) both; animation-delay: .06s; }
+}
