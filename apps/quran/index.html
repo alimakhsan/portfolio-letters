@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <title>Mushaf · 3D Qur'an</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2712%27 fill=%27%23164a34%27/%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2716%27 fill=%27none%27 stroke=%27%23d9b45b%27 stroke-width=%274%27/%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%275%27 fill=%27%23d9b45b%27/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://static-cdn.tarteel.ai" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body data-state="closed">
+  <canvas id="scene"></canvas>
+
+  <!-- page controls laid over the 3D pages (filled by src/pageUi.js) -->
+  <div id="pageUi" aria-label="Page"></div>
+
+  <header id="topbar">
+    <div class="brand"><span class="brand-ar">المصحف</span></div>
+    <div class="top-tools">
+      <button id="btnClose" class="chrome-btn" hidden title="Close the Qur’an">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        <span class="lbl">Close</span>
+      </button>
+      <button id="btnReading" class="chrome-btn icon" title="Reading settings" aria-label="Reading settings" aria-expanded="false" aria-controls="readingPop">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M2.5 5.2C5.4 4.1 8.6 4.3 12 6.4c3.4-2.1 6.6-2.3 9.5-1.2v13.4c-2.9-1.1-6.1-.9-9.5 1.2-3.4-2.1-6.6-2.3-9.5-1.2z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 6.4v13.2" stroke="currentColor" stroke-width="1.5"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- the one settings modal -->
+  <div id="readingPop" class="pop reading" hidden role="dialog" aria-label="Reading settings">
+    <div class="set switch-row">
+      <div>
+        <div class="sw-title" id="tajwidLabel">Tajwid</div>
+        <div class="sw-sub">Colour the tajwid rules on the page</div>
+      </div>
+      <button id="tajwidSwitch" class="switch" role="switch" aria-checked="false" aria-labelledby="tajwidLabel"><span class="knob"></span></button>
+    </div>
+    <div class="set switch-row">
+      <div>
+        <div class="sw-title" id="soundLabel">Sound</div>
+        <div class="sw-sub">Page turns and room ambience</div>
+      </div>
+      <button id="soundSwitch" class="switch" role="switch" aria-checked="true" aria-labelledby="soundLabel"><span class="knob"></span></button>
+    </div>
+    <div class="set">
+      <div class="set-label">Translation</div>
+      <div class="segmented" role="group" aria-label="Translation" id="trGroup">
+        <button class="seg" data-tr="33" aria-pressed="true">Indonesia</button>
+        <button class="seg" data-tr="20" aria-pressed="false">English</button>
+      </div>
+    </div>
+    <div class="set">
+      <div class="set-label">Theme</div>
+      <div class="segmented" role="group" aria-label="Theme" id="themeGroup">
+        <button class="seg" data-theme="light" aria-pressed="true">Day</button>
+        <button class="seg" data-theme="dark" aria-pressed="false">Night</button>
+      </div>
+    </div>
+  </div>
+
+  <footer id="footbar">
+    <div class="credit">
+      <span class="dot" aria-hidden="true"></span>
+      <span>Qur’an data from <a href="https://quran.com" target="_blank" rel="noopener">quran.com</a> · mushaf fonts from <a href="https://qul.tarteel.ai" target="_blank" rel="noopener">Tarteel</a></span>
+      <span class="sep" aria-hidden="true">·</span>
+      <button id="btnCredits" class="link">Credits &amp; license</button>
+    </div>
+    <div class="center">
+      <div id="beginHint" class="hint">Tap the Qur’an to begin</div>
+      <!-- the recitation player -->
+      <div id="player" role="group" aria-label="Recitation">
+        <button id="plPlay" class="pl-btn main" aria-label="Play recitation" title="Play">
+          <svg class="ico-play" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg>
+          <svg class="ico-pause" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M7.5 5.5h3v13h-3zM13.5 5.5h3v13h-3z" fill="currentColor"/></svg>
+        </button>
+        <button id="plStop" class="pl-btn" aria-label="Stop recitation" title="Stop" disabled>
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><rect x="6.5" y="6.5" width="11" height="11" rx="1.5" fill="currentColor"/></svg>
+        </button>
+        <button id="plReciter" class="pl-info" aria-label="Choose reciter" aria-expanded="false" aria-controls="recitePop">
+          <span class="pl-now" id="plNow">Listen</span>
+          <span class="pl-sub" id="plSub">Mishari Rashid al-`Afasy</span>
+          <svg class="pl-chev" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M7 14l5-5 5 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- actions for the tapped ayah -->
+  <div id="ayahBar" role="toolbar" aria-label="Ayah" hidden>
+    <span class="ab-key" id="abKey"></span>
+    <button data-ab="play"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg><span id="abPlayLabel">Play from here</span></button>
+    <button data-ab="copy"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><rect x="8.5" y="8.5" width="11" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M15.5 8.5V6a1.5 1.5 0 0 0-1.5-1.5H6A1.5 1.5 0 0 0 4.5 6v8A1.5 1.5 0 0 0 6 15.5h2.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg><span id="abCopyLabel">Copy</span></button>
+  </div>
+
+  <!-- surah & ayah picker: two lists that scroll on their own, then one confirm -->
+  <div id="navPop" class="pop nav" hidden role="dialog" aria-label="Go to">
+    <div class="juz-row">
+      <span class="juz-label">Juz</span>
+      <div class="juz-chips" id="juzChips"></div>
+    </div>
+    <div class="marks" id="navMarks" hidden></div>
+    <label class="search">
+      <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M16 16l4.5 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <input id="navSearch" type="search" placeholder="Search surah, or type 2:255" autocomplete="off" spellcheck="false" />
+    </label>
+    <div class="panes">
+      <div class="pane">
+        <div class="pane-head"><span>Surah</span><span>Page</span></div>
+        <div class="pane-list" id="surahList" role="listbox" aria-label="Surah"></div>
+      </div>
+      <div class="pane ayah-pane">
+        <div class="pane-head"><span>Ayah</span><span class="pane-meta" id="ayahMeta"></span></div>
+        <div class="pane-list" id="ayahList" role="listbox" aria-label="Ayah"></div>
+      </div>
+    </div>
+    <div class="nav-foot">
+      <button class="ghost-btn" id="navCancel">Cancel</button>
+      <button class="solid-btn" id="navGo"><span id="navGoLabel">Go</span></button>
+    </div>
+  </div>
+
+  <div id="recitePop" class="pop menu" hidden role="dialog" aria-label="Reciter">
+    <div class="set-label">Reciter</div>
+    <div class="options scroll" id="reciterOptions"></div>
+  </div>
+
+  <div id="pagePop" class="pop menu page-jump" hidden role="dialog" aria-label="Go to page">
+    <div class="set-label">Go to page</div>
+    <form id="pageForm" class="page-form">
+      <input id="pageInput" type="number" min="1" max="604" inputmode="numeric" aria-label="Page number" />
+      <button type="submit" class="solid-btn">Go</button>
+    </form>
+  </div>
+
+  <dialog id="creditsDialog" aria-label="Credits and license">
+    <div class="dlg-head">
+      <span class="dlg-title">Credits &amp; license</span>
+      <button class="icon-btn" id="creditsClose" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="dlg-body">
+      <ul class="credits">
+        <li>Qur’an text, Madani V2 page layout, translations, recitations and tajwid rules: <a href="https://quran.com" target="_blank" rel="noopener">quran.com API</a>, Quran Foundation.</li>
+        <li>Mushaf typefaces: King Fahd Glorious Qur’an Printing Complex page fonts (QPC V4, plain and tajwid), and the V4 surah-name font, served by <a href="https://tarteel.ai" target="_blank" rel="noopener">Tarteel</a> through its <a href="https://qul.tarteel.ai" target="_blank" rel="noopener">Quranic Universal Library</a> (QUL).</li>
+        <li>Fallback typeface: KFGQPC Uthmanic Script HAFS.</li>
+        <li>Translations: Saheeh International (English), Kementerian Agama RI (Indonesian).</li>
+        <li>Surah heading ornament: <a href="https://github.com/tarekeldeeb/quran-madina-html" target="_blank" rel="noopener">quran-madina-html</a> by Tarek Eldeeb.</li>
+        <li>Interface type: Inter (Rasmus Andersson) and Amiri (Khaled Hosny), SIL Open Font License.</li>
+        <li>3D rendering: <a href="https://threejs.org" target="_blank" rel="noopener">three.js</a>.</li>
+      </ul>
+      <p class="small">The application code is released under the MIT License. Qur’an text and typefaces remain under the terms of their respective owners: the King Fahd Complex font license, the Quranic Universal Library terms, and the quran.com API terms of use. Translations and recitations are © their publishers.</p>
+    </div>
+  </dialog>
+
+  <div id="loading">
+    <div class="loading-inner">
+      <div class="loading-ar">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</div>
+      <div class="loading-text" id="loadingText">Preparing the mushaf…</div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

@@ -17,4 +17,8 @@
 /2025      https://ahmadalim.framer.website/                                        301
 /2024      https://alimwork.framer.website/                                         301
 
+# The Qur'an app source (apps/quran) ships in the repo but is built into /quran;
+# don't serve the raw source tree.
+/apps/*  /404.html  404
+
 # Unknown paths fall through to Netlify's automatic 404.html

@@ -1,3 +1,8 @@
 .DS_Store
 node_modules/
 session-handoff.md
+
+# Qur'an app (apps/quran) — deps and build output; Netlify regenerates /quran on deploy
+apps/quran/node_modules
+apps/quran/dist
+/quran/
