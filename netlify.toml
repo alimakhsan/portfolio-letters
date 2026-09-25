@@ -1,3 +1,8 @@
 [build]
+  # The site root is still published as-is. The build step compiles the Vite
+  # Qur'an app (apps/quran/) into the repo-root quran/ folder, served at /quran.
   publish = "."
-  command = ""
+  command = "cd apps/quran && npm ci && npm run build"
+
+[build.environment]
+  NODE_VERSION = "20"

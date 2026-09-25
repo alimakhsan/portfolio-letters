@@ -10,3 +10,14 @@
 # Long-cache fingerprint-free static assets (immutable images)
 /assets/*
   Cache-Control: public, max-age=2592000
+
+# The Qur'an app (/quran) talks to external Qur'an APIs, fonts and audio, so it
+# needs a looser CSP than the site default. Netlify applies the most specific
+# path per header, so this overrides only the CSP on /quran/* — the other /*
+# security headers (HSTS, X-Frame-Options, …) still apply.
+/quran/*
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://static-cdn.tarteel.ai; script-src 'self' 'unsafe-inline'; connect-src 'self' https://api.quran.com https://api.qurancdn.com https://static-cdn.tarteel.ai https://verses.quran.com https://audio.qurancdn.com; media-src 'self' https://verses.quran.com https://audio.qurancdn.com; worker-src 'none'
+
+# Vite fingerprints these, so they're immutable
+/quran/assets/*
+  Cache-Control: public, max-age=31536000, immutable
