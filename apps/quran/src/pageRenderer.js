@@ -1,5 +1,6 @@
 // Draws mushaf pages (Madani 15-line layout), covers and title pages onto canvases.
 import { QCF_FONT, SURAH_NAME_FONT } from './quranApi.js';
+import { BOX as CALLI_BOX, PATH as CALLI_PATH } from './calligraphy.js';
 export const PW = 1560;
 export const PH = 1856;
 // Page zones in logical px. A right-hand page has the spine at x = 0 and its translation column on the
@@ -787,7 +788,7 @@ function drawCoverOrnament(ctx) {
 
   // the field: an eight-fold lattice, stopping short of the central panel
   const cx = PW / 2, cy = PH / 2;
-  const panel = panelOutline(cx, cy, { halfW: 330, halfH: 690, arch: 150, waist: 300, notch: Math.PI / 4 });
+  const panel = panelOutline(cx, cy, { halfW: 370, halfH: 690, arch: 150, waist: 380, notch: Math.PI / 4 });
   const field = document.createElement('canvas');
   field.width = PW; field.height = PH;
   const fc = field.getContext('2d');
@@ -810,22 +811,18 @@ function drawCoverOrnament(ctx) {
   ctx.lineWidth = 3;
   tracePoints(ctx, panel);
   ctx.stroke();
-  const R = 232;
+  const R = 320;
   ctx.lineWidth = 8; ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.stroke();
   ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(cx, cy, R - 16, 0, Math.PI * 2); ctx.stroke();
 
-  // the title inside the medallion
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.direction = 'rtl';
-  const fit = (text, size, maxW) => {
-    ctx.font = `bold ${size}px "Amiri"`;
-    const w = ctx.measureText(text).width;
-    if (w > maxW) ctx.font = `bold ${Math.floor((size * maxW) / w)}px "Amiri"`;
-  };
-  // unvowelled, as a title is set on a binding
-  fit('القرآن', 168, 340);
-  ctx.fillText('القرآن', cx, cy - 62);
-  fit('الكريم', 168, 340);
-  ctx.fillText('الكريم', cx, cy + 92);
+  // the title: the calligraphic roundel, filling the medallion
+  const bw = CALLI_BOX.x1 - CALLI_BOX.x0, bh = CALLI_BOX.y1 - CALLI_BOX.y0;
+  const k = (2 * (R - 34)) / Math.max(bw, bh);
+  ctx.save();
+  ctx.translate(cx - ((CALLI_BOX.x0 + CALLI_BOX.x1) / 2) * k, cy - ((CALLI_BOX.y0 + CALLI_BOX.y1) / 2) * k);
+  ctx.scale(k, k);
+  ctx.fill(new Path2D(CALLI_PATH), 'evenodd');
+  ctx.restore();
   ctx.restore();
 }
 
