@@ -28,6 +28,8 @@
     0 12px 32px -10px oklch(0 0 0 / 0.28),
     0 2px 6px 0 oklch(0 0 0 / 0.08);
   --shadow-chrome: 0 0 0 1px oklch(0 0 0 / 0.08), 0 6px 18px -6px oklch(0 0 0 / 0.35);
+  --tonal: oklch(0 0 0 / 0.09);
+  --tonal-hover: oklch(0 0 0 / 0.14);
   /* the paper never changes colour, so text laid on it keeps these in both themes */
   --pg-ink: #27231c;
   --pg-ink-2: #5a5346;
@@ -54,6 +56,8 @@
   --shadow-border: 0 0 0 1px oklch(1 0 0 / 0.08);
   --shadow-panel: 0 0 0 1px oklch(1 0 0 / 0.08), 0 16px 40px -10px oklch(0 0 0 / 0.7);
   --shadow-chrome: 0 0 0 1px oklch(1 0 0 / 0.08), 0 6px 18px -6px oklch(0 0 0 / 0.6);
+  --tonal: oklch(1 0 0 / 0.12);
+  --tonal-hover: oklch(1 0 0 / 0.18);
   /* lamplight dims the paper a little: keep the text on it a step darker */
   --pg-ink: #1f1b15;
   --pg-ink-2: #463e31;
@@ -92,8 +96,8 @@ button { -webkit-tap-highlight-color: transparent; }
 }
 #topbar > * { pointer-events: auto; }
 .brand { display: flex; align-items: center; line-height: 1; user-select: none; }
-.brand-ar {
-  font-family: "Amiri", serif; font-size: 28px; font-weight: 700;
+.brand-name {
+  font-family: "Libre Baskerville", Georgia, serif; font-size: 22px; letter-spacing: 0;
   color: var(--on-desk);
   text-shadow: 0 1px 2px oklch(0 0 0 / 0.45), 0 0 18px oklch(0 0 0 / 0.25);
 }
@@ -112,7 +116,9 @@ button { -webkit-tap-highlight-color: transparent; }
 .chrome-btn:active { scale: 0.96; }
 .chrome-btn.icon { width: 44px; padding: 0; }
 .top-tools { display: flex; align-items: center; gap: 8px; }
-#btnClose { padding: 0 18px 0 14px; gap: 8px; }
+#btnClose { padding: 0 20px; }
+#btnReading .ico-x, #btnReading[aria-expanded="true"] .ico-book { display: none; }
+#btnReading[aria-expanded="true"] .ico-x { display: block; }
 .chrome-btn[aria-expanded="true"] { background: var(--chrome-hover); }
 .chrome-btn:focus-visible, .pg button:focus-visible, .pop button:focus-visible, .link:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 
@@ -133,8 +139,6 @@ button { -webkit-tap-highlight-color: transparent; }
 }
 .credit a, .link { color: var(--on-desk); text-decoration: underline; text-underline-offset: 2px; text-decoration-color: oklch(1 0 0 / 0.35); }
 .link { background: none; border: 0; padding: 0; cursor: pointer; font-size: inherit; }
-.credit .dot { width: 6px; height: 6px; border-radius: 50%; background: #b9c98a; box-shadow: 0 0 0 3px oklch(0.8 0.1 120 / 0.18); }
-.credit .sep { opacity: 0.6; }
 #footbar .center { justify-self: center; }
 .hint {
   font-family: "Amiri", Georgia, serif; font-style: italic; font-size: 17px;
@@ -289,6 +293,8 @@ body[data-state="reading"] #beginHint, body[data-state="closed"] #player { displ
 .pl-btn .ico-pause, #player[data-state="playing"] .ico-play { display: none; }
 #player[data-state="playing"] .ico-pause { display: block; }
 #player[data-state="idle"] #plStop { display: none; }
+#player #plStop { background: var(--tonal); }
+#player #plStop:hover:not(:disabled) { background: var(--tonal-hover); }
 .pl-info {
   display: grid; grid-template-columns: auto auto; grid-template-rows: auto auto; column-gap: 8px; align-items: center;
   min-width: 0; max-width: 260px; padding: 3px 14px 3px 10px; border-radius: 999px; text-align: left;
@@ -375,6 +381,9 @@ body[data-state="reading"] #beginHint, body[data-state="closed"] #player { displ
 .switch[aria-checked="true"] { background: #2f7a4b; }
 .switch[aria-checked="true"] .knob { translate: 18px 0; }
 .switch:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+:root[data-theme="dark"] .switch .knob { background: var(--ink-3); box-shadow: none; }
+:root[data-theme="dark"] .switch[aria-checked="true"] { background: var(--accent); }
+:root[data-theme="dark"] .switch[aria-checked="true"] .knob { background: #1a1714; }
 
 /* surah & ayah picker */
 .nav { width: 560px; padding: 16px; display: flex; flex-direction: column; }
@@ -510,30 +519,45 @@ dialog::backdrop { background: oklch(0 0 0 / 0.35); }
 .small { font-size: 13px; line-height: 1.55; color: var(--ink-2); margin: 0; }
 
 /* ---------- loading ---------- */
+/* laid over the table, which is drawn before anything has loaded */
 #loading {
   position: fixed; inset: 0; z-index: 40;
   display: grid; place-items: center;
-  background: #0f3a29;
-  color: #e6c76b;
   transition: opacity 600ms ease-out;
 }
+body:has(#loading:not(.done)) #beginHint { visibility: hidden; }
 #loading.done { opacity: 0; pointer-events: none; }
 .loading-inner { text-align: center; padding: 0 24px; }
-.loading-ar { font-family: "Amiri Quran", "Amiri", serif; font-size: 44px; direction: rtl; }
-.loading-text { margin-top: 18px; font-size: 13px; letter-spacing: 0.04em; color: #cdb98a; }
+.loading-text {
+  padding: 14px 28px; border-radius: 999px;
+  background: var(--chrome); color: var(--chrome-ink);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-chrome);
+  font-family: "Libre Baskerville", Georgia, serif; font-size: 22px; line-height: 1.4;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .pop, dialog[open], #loading, .pg, .hint, #player, #ayahBar { transition: none; animation: none; }
   #player[data-state="playing"] .pl-now::before { animation: none; }
 }
 
+@media (hover: hover) and (pointer: fine) {
+  .pg .pg-arrow, .pg .corner { opacity: 0; transition: opacity 180ms ease-out, background-color 150ms ease-out, color 150ms ease-out, scale 150ms ease-out; }
+  .pg :is(.pg-arrow, .corner):disabled { opacity: 0; }
+  .pg:is(.hover, :has(.pg-zone:hover)) :is(.pg-arrow, .corner):not(:disabled),
+  .pg :is(.pg-arrow, .corner):focus-visible { opacity: 1; }
+  .pg:is(.hover, :has(.pg-zone:hover)) .pg-arrow:disabled { opacity: 0.25; }
+}
+/* touch: the page arrows stay where they are and still turn the page, but are not drawn (swiping does the same) */
 @media (pointer: coarse) {
   .corner { display: none; }
+  .pg .pg-arrow, .pg .pg-arrow:disabled { opacity: 0; }
 }
 
 @media (max-width: 720px) {
   #topbar { padding: 10px 12px; padding-top: max(10px, env(safe-area-inset-top)); }
-  .brand-ar { font-size: 24px; }
+  .brand-name { font-size: 20px; }
+  .loading-text { font-size: 19px; padding: 12px 22px; }
   .chrome-btn { height: 42px; }
   .chrome-btn.icon { width: 42px; }
   #btnClose { padding: 0 14px 0 12px; }

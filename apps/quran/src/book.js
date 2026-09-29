@@ -176,10 +176,10 @@ export class Book {
     const paperTop = new THREE.MeshStandardMaterial({ color: 0xf3ead2, roughness: 0.95, side: THREE.DoubleSide });
     const edgeMat = new THREE.MeshStandardMaterial({ map: edge, roughness: 0.95, side: THREE.DoubleSide });
     const leather = S.leatherMaps();
-    const leatherMat = new THREE.MeshStandardMaterial({ map: leather.map, bumpMap: leather.bumpMap, bumpScale: 0.0025, roughness: 0.62, metalness: 0.04 });
+    const leatherMat = this.leatherMat = new THREE.MeshStandardMaterial({ map: leather.map, bumpMap: leather.bumpMap, bumpScale: 0.0025, roughness: 0.62, metalness: 0.04 });
     const endpaper = new THREE.MeshStandardMaterial({ map: S.special('inside').map, roughness: 0.9 });
     const cover = S.coverMaps();
-    const coverTopMat = new THREE.MeshStandardMaterial({
+    const coverTopMat = this.coverMat = new THREE.MeshStandardMaterial({
       map: cover.map, bumpMap: cover.bumpMap, bumpScale: 0.004,
       roughnessMap: cover.roughnessMap, metalnessMap: cover.metalnessMap, roughness: 1, metalness: 1,
     });
@@ -316,6 +316,14 @@ export class Book {
     ]);
     this._setMaps(this.left.page, lt);
     this._setMaps(this.right.page, rt);
+  }
+
+  /** Re-dress the binding for the source's current theme (blue by day, black by night). */
+  applyTheme() {
+    this.coverMat.map = this.source.coverMaps().map;
+    this.leatherMat.map = this.source.leatherMaps().map;
+    this.coverMat.needsUpdate = this.leatherMat.needsUpdate = true;
+    this.onChange?.();
   }
 
   /** Swap the map of a resting page (the app shows a text-less page under its vector Arabic). */
@@ -516,8 +524,10 @@ export class Book {
       const theta = lerp(a.from, a.to, e);
       // the tip trails behind the direction of travel; when a dragged leaf falls back it trails the other way
       const travel = a.manual && a.pVel < -0.05 ? -1 : 1;
-      const bend = travel * a.dir * a.bendAmp * Math.sin(p * Math.PI);
-      const w = 1 - Math.pow(Math.sin(p * Math.PI), 0.7);
+      // curl and flatten with the eased turn, not the clock: ahead of the turn, the leaf would dip into the
+      // page beneath and show the next page's text through the one still lying there
+      const bend = travel * a.dir * a.bendAmp * Math.sin(e * Math.PI);
+      const w = 1 - Math.pow(Math.sin(e * Math.PI), 0.7);
       this._deformSheet(theta, bend, e, w);
     }
     if (done) this._finish(a.manual && a.tween && a.tween.p1 === 0);

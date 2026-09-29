@@ -240,5 +240,7 @@ export class PageUi {
     this.arabic = { right: new ArabicLayer(root), left: new ArabicLayer(root) };
   }
   show(side, on) { this.sides[side].el.classList.toggle('on', on); }
+  /** The page under the pointer ('left', 'right' or null): its arrow and folded corner show on hover. */
+  hover(side) { for (const [k, s] of Object.entries(this.sides)) s.el.classList.toggle('hover', k === side); }
   setActive(key, scroll = true) { for (const s of Object.values(this.sides)) s.setActive(key, scroll); }
 }

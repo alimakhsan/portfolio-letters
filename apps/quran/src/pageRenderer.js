@@ -142,9 +142,10 @@ export const BASMALA = 'بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ �
 
 export async function ensureFonts() {
   await Promise.all([
-    document.fonts.load('48px "Amiri Quran"'),
-    document.fonts.load('48px "Amiri"'),
-    document.fonts.load('bold 48px "Amiri"'),
+    // with Arabic sample text: the webfonts are split by script, and a bare load fetches only the Latin part
+    document.fonts.load('48px "Amiri Quran"', BASMALA),
+    document.fonts.load('48px "Amiri"', BASMALA),
+    document.fonts.load('bold 48px "Amiri"', 'القرآن الكريم'),
     document.fonts.load('500 16px "Inter"'),
     document.fonts.load('48px "UthmanicHafs"'),
     loadSurahNames(),
@@ -677,15 +678,9 @@ function leatherGrain(ctx, w, h, base, strength = 1) {
   ctx.putImageData(img, 0, 0);
 }
 
-function petal(ctx, cx, cy, r0, r1, a, halfW) {
-  // pointed leaf from radius r0 to r1 at angle a
-  const px = Math.cos(a), py = Math.sin(a), nx = -py, ny = px;
-  ctx.beginPath();
-  ctx.moveTo(cx + px * r0, cy + py * r0);
-  ctx.quadraticCurveTo(cx + px * (r0 + r1) / 2 + nx * halfW, cy + py * (r0 + r1) / 2 + ny * halfW, cx + px * r1, cy + py * r1);
-  ctx.quadraticCurveTo(cx + px * (r0 + r1) / 2 - nx * halfW, cy + py * (r0 + r1) / 2 - ny * halfW, cx + px * r0, cy + py * r0);
-  ctx.closePath();
-}
+// ---------- cover ----------
+/** Leather of the binding: blue by day, black by night. */
+export const COVER_LEATHER = { day: '#1f3a6b', night: '#141417' };
 
 function starPoly(ctx, cx, cy, n, rOut, rIn, rot = 0) {
   ctx.beginPath();
@@ -698,123 +693,154 @@ function starPoly(ctx, cx, cy, n, rOut, rIn, rot = 0) {
   ctx.closePath();
 }
 
+/**
+ * An eight-fold geometric lattice over the rectangle: Hankin's polygons-in-contact on the octagon-and-square
+ * tiling (cell s), each edge midpoint sending two rays inward at `contact` radians to the edge.
+ */
+function eightFoldLattice(ctx, x0, y0, w, h, s, contact) {
+  const e = s / (1 + Math.SQRT2);
+  const cx0 = x0 + w / 2, cy0 = y0 + h / 2;
+  const ni = Math.ceil(w / s / 2) + 1, nj = Math.ceil(h / s / 2) + 1;
+  const cos = Math.cos(contact), sin = Math.sin(contact);
+  const polygon = (cx, cy, n, R, rot) => {
+    const V = [];
+    for (let k = 0; k < n; k++) V.push([cx + R * Math.cos(rot + (k * 2 * Math.PI) / n), cy + R * Math.sin(rot + (k * 2 * Math.PI) / n)]);
+    for (let k = 0; k < n; k++) {
+      const A = V[k], B = V[(k + 1) % n], C = V[(k + 2) % n];
+      const m1 = [(A[0] + B[0]) / 2, (A[1] + B[1]) / 2], m2 = [(B[0] + C[0]) / 2, (B[1] + C[1]) / 2];
+      const ul = Math.hypot(B[0] - A[0], B[1] - A[1]), u = [(B[0] - A[0]) / ul, (B[1] - A[1]) / ul];
+      const il = Math.hypot(cx - m1[0], cy - m1[1]), inw = [(cx - m1[0]) / il, (cy - m1[1]) / il];
+      const r = [u[0] * cos + inw[0] * sin, u[1] * cos + inw[1] * sin];
+      // meet the line from the centre through vertex B
+      const d = [B[0] - cx, B[1] - cy];
+      const den = r[0] * d[1] - r[1] * d[0];
+      const t = ((cx - m1[0]) * d[1] - (cy - m1[1]) * d[0]) / den;
+      const P = [m1[0] + r[0] * t, m1[1] + r[1] * t];
+      ctx.moveTo(m1[0], m1[1]); ctx.lineTo(P[0], P[1]); ctx.lineTo(m2[0], m2[1]);
+    }
+  };
+  ctx.beginPath();
+  for (let i = -ni; i <= ni; i++) {
+    for (let j = -nj; j <= nj; j++) {
+      polygon(cx0 + i * s, cy0 + j * s, 8, e / (2 * Math.sin(Math.PI / 8)), Math.PI / 8);
+      polygon(cx0 + (i + 0.5) * s, cy0 + (j + 0.5) * s, 4, e / Math.SQRT2, 0);
+    }
+  }
+  ctx.stroke();
+}
+
+/**
+ * The central panel: a pointed arch at the top and bottom, straight sides, and a waist that pinches in
+ * and swells round the medallion. Returns the outline as points (centre cx, cy).
+ */
+function panelOutline(cx, cy, { halfW, halfH, arch, waist, notch }) {
+  const pts = [];
+  const cubic = (p0, p1, p2, p3) => {
+    for (let k = 1; k <= 24; k++) {
+      const t = k / 24, m = 1 - t;
+      pts.push([m * m * m * p0[0] + 3 * m * m * t * p1[0] + 3 * m * t * t * p2[0] + t * t * t * p3[0],
+        m * m * m * p0[1] + 3 * m * m * t * p1[1] + 3 * m * t * t * p2[1] + t * t * t * p3[1]]);
+    }
+  };
+  const quad = (p0, p1, p2) => {
+    for (let k = 1; k <= 16; k++) {
+      const t = k / 16, m = 1 - t;
+      pts.push([m * m * p0[0] + 2 * m * t * p1[0] + t * t * p2[0], m * m * p0[1] + 2 * m * t * p1[1] + t * t * p2[1]]);
+    }
+  };
+  // the right half, top tip to bottom tip, in panel coordinates (y down)
+  const nx = waist * Math.cos(notch), ny = waist * Math.sin(notch);
+  const top = -halfH, shoulder = top + arch * 1.35, side = ny + 70;
+  pts.push([0, top]);
+  cubic([0, top], [halfW * 0.1, top + arch * 0.6], [halfW * 0.55, top + arch * 0.72], [halfW * 0.82, top + arch * 0.9]);
+  quad([halfW * 0.82, top + arch * 0.9], [halfW, top + arch * 1.0], [halfW, shoulder]);
+  pts.push([halfW, -side]);
+  quad([halfW, -side], [halfW, -ny], [nx, -ny]);
+  for (let k = 1; k <= 40; k++) { const a = -notch + (2 * notch * k) / 40; pts.push([waist * Math.cos(a), waist * Math.sin(a)]); }
+  quad([nx, ny], [halfW, ny], [halfW, side]);
+  pts.push([halfW, -shoulder]);
+  quad([halfW, -shoulder], [halfW, -top - arch * 1.0], [halfW * 0.82, -top - arch * 0.9]);
+  cubic([halfW * 0.82, -top - arch * 0.9], [halfW * 0.55, -top - arch * 0.72], [halfW * 0.1, -top - arch * 0.6], [0, -top]);
+  const right = pts.map(([x, y]) => [cx + x, cy + y]);
+  const left = pts.slice(1, -1).reverse().map(([x, y]) => [cx - x, cy + y]);
+  return right.concat(left);
+}
+const tracePoints = (ctx, pts) => { ctx.beginPath(); pts.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.closePath(); };
+
 /** Draws the gold tooling of the cover onto ctx (white on transparent). */
 function drawCoverOrnament(ctx) {
   ctx.save();
   ctx.strokeStyle = '#fff';
   ctx.fillStyle = '#fff';
   ctx.lineJoin = 'round';
-  // outer rules
-  ctx.lineWidth = 7; ctx.strokeRect(58, 58, PW - 116, PH - 116);
-  ctx.lineWidth = 2; ctx.strokeRect(76, 76, PW - 152, PH - 152);
-  ctx.lineWidth = 2; ctx.strokeRect(150, 150, PW - 300, PH - 300);
-  ctx.lineWidth = 1.2; ctx.strokeRect(162, 162, PW - 324, PH - 324);
-  // running border motif between 90 and 140
-  const mid = 113, step = 46;
-  const motif = (x, y, ang) => {
-    ctx.save(); ctx.translate(x, y); ctx.rotate(ang);
-    ctx.beginPath(); ctx.moveTo(-14, 0); ctx.quadraticCurveTo(0, -12, 14, 0); ctx.quadraticCurveTo(0, 12, -14, 0); ctx.closePath(); ctx.fill();
-    ctx.beginPath(); ctx.arc(-21, 0, 3, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(21, 0, 3, 0, Math.PI * 2); ctx.fill();
-    ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.moveTo(-23, -9); ctx.quadraticCurveTo(-8, -18, 0, -9); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(0, 9); ctx.quadraticCurveTo(8, 18, 23, 9); ctx.stroke();
-    ctx.restore();
-  };
-  for (let x = mid + step; x < PW - mid - step / 2; x += step) { motif(x, mid, 0); motif(x, PH - mid, Math.PI); }
-  for (let y = mid + step; y < PH - mid - step / 2; y += step) { motif(mid, y, -Math.PI / 2); motif(PW - mid, y, Math.PI / 2); }
-  for (const [x, y] of [[mid, mid], [PW - mid, mid], [mid, PH - mid], [PW - mid, PH - mid]]) {
-    ctx.beginPath(); ctx.arc(x, y, 11, 0, Math.PI * 2); ctx.fill();
+  ctx.lineCap = 'round';
+  const rule = (inset, width) => { ctx.lineWidth = width; ctx.strokeRect(inset, inset, PW - 2 * inset, PH - 2 * inset); };
+  // frame: a rule and a double rule outside, a band of small stars, a double rule inside
+  rule(46, 3); rule(62, 1.6);
+  rule(138, 1.6); rule(152, 3);
+  const band = 100;
+  const starAt = (x, y) => { starPoly(ctx, x, y, 8, 11, 5, Math.PI / 8); ctx.fill(); };
+  for (const [len, along] of [[PW, (t) => [[t, band], [t, PH - band]]], [PH, (t) => [[band, t], [PW - band, t]]]]) {
+    const n = Math.round((len - 2 * band) / 200);
+    for (let k = 0; k <= n; k++) for (const [x, y] of along(band + ((len - 2 * band) * k) / n)) starAt(x, y);
   }
-  // corner quarter-shamsas
-  const cr = 230;
-  for (const [cx, cy, a0] of [[162, 162, 0], [PW - 162, 162, Math.PI / 2], [PW - 162, PH - 162, Math.PI], [162, PH - 162, -Math.PI / 2]]) {
-    ctx.save();
-    ctx.beginPath(); ctx.rect(162, 162, PW - 324, PH - 324); ctx.clip();
-    for (let k = 0; k <= 6; k++) {
-      const a = a0 + (k / 6) * (Math.PI / 2);
-      petal(ctx, cx, cy, 40, cr, a, 22); ctx.fill();
-      petal(ctx, cx, cy, 60, cr - 30, a, 10); ctx.globalCompositeOperation = 'destination-out'; ctx.fill(); ctx.globalCompositeOperation = 'source-over';
-    }
-    ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.arc(cx, cy, cr + 14, a0, a0 + Math.PI / 2); ctx.stroke();
-    ctx.beginPath(); ctx.arc(cx, cy, 36, a0, a0 + Math.PI / 2); ctx.stroke();
-    for (let k = 0; k <= 6; k++) {
-      const a = a0 + (k / 6) * (Math.PI / 2);
-      ctx.beginPath(); ctx.arc(cx + Math.cos(a) * (cr + 30), cy + Math.sin(a) * (cr + 30), 5, 0, Math.PI * 2); ctx.fill();
-    }
-    ctx.restore();
-  }
-  // central shamsa
-  const cx = PW / 2, cy = PH / 2 + 60;
-  const R = 300;
-  for (let k = 0; k < 16; k++) {
-    const a = (k / 16) * Math.PI * 2;
-    petal(ctx, cx, cy, R - 10, R + 95, a, 24); ctx.fill();
-    petal(ctx, cx, cy, R + 6, R + 70, a, 9); ctx.globalCompositeOperation = 'destination-out'; ctx.fill(); ctx.globalCompositeOperation = 'source-over';
-    const fx = cx + Math.cos(a + Math.PI / 16) * (R + 60), fy = cy + Math.sin(a + Math.PI / 16) * (R + 60);
-    ctx.beginPath(); ctx.arc(fx, fy, 6, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(cx + Math.cos(a) * (R + 118), cy + Math.sin(a) * (R + 118), 5, 0, Math.PI * 2); ctx.fill();
-  }
-  ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.stroke();
-  ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, R - 16, 0, Math.PI * 2); ctx.stroke();
-  ctx.lineWidth = 3; starPoly(ctx, cx, cy, 12, R - 30, R - 60); ctx.stroke();
-  ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(cx, cy, R - 78, 0, Math.PI * 2); ctx.stroke();
-  // small rosettes between the star points
-  for (let k = 0; k < 12; k++) {
-    const a = (k / 12) * Math.PI * 2 + Math.PI / 12;
-    ctx.beginPath(); ctx.arc(cx + Math.cos(a) * (R - 45), cy + Math.sin(a) * (R - 45), 5, 0, Math.PI * 2); ctx.fill();
-  }
-  // title inside the shamsa, on a clear field
-  ctx.font = 'bold 150px "Amiri"';
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.direction = 'rtl';
-  ctx.fillText('ٱلْقُرْءَانُ', cx, cy - 78);
-  ctx.fillText('ٱلْكَرِيمُ', cx, cy + 84);
-  ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.moveTo(cx - 120, cy + 2); ctx.lineTo(cx + 120, cy + 2); ctx.stroke();
-  ctx.beginPath(); ctx.arc(cx, cy + 2, 7, 0, Math.PI * 2); ctx.fill();
-  // top cartouche with the title
-  const ty = 400;
+
+  // the field: an eight-fold lattice, stopping short of the central panel
+  const cx = PW / 2, cy = PH / 2;
+  const panel = panelOutline(cx, cy, { halfW: 330, halfH: 690, arch: 150, waist: 300, notch: Math.PI / 4 });
+  const field = document.createElement('canvas');
+  field.width = PW; field.height = PH;
+  const fc = field.getContext('2d');
+  fc.strokeStyle = '#fff';
+  fc.lineWidth = 1.9;
+  fc.lineJoin = 'round';
+  const fx = 164;
+  fc.save();
+  fc.beginPath(); fc.rect(fx, fx, PW - 2 * fx, PH - 2 * fx); fc.clip();
+  eightFoldLattice(fc, fx, fx, PW - 2 * fx, PH - 2 * fx, 112, (67.5 * Math.PI) / 180);
+  fc.restore();
+  fc.globalCompositeOperation = 'destination-out';
+  tracePoints(fc, panel);
+  fc.fill();
+  fc.lineWidth = 30;
+  fc.stroke();
+  ctx.drawImage(field, 0, 0);
+
+  // the panel's outline and the medallion
   ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(cx - 330, ty);
-  ctx.quadraticCurveTo(cx - 330, ty - 70, cx - 240, ty - 70);
-  ctx.lineTo(cx + 240, ty - 70);
-  ctx.quadraticCurveTo(cx + 330, ty - 70, cx + 330, ty);
-  ctx.quadraticCurveTo(cx + 330, ty + 70, cx + 240, ty + 70);
-  ctx.lineTo(cx - 240, ty + 70);
-  ctx.quadraticCurveTo(cx - 330, ty + 70, cx - 330, ty);
-  ctx.closePath(); ctx.stroke();
-  for (const sx of [-1, 1]) { ctx.beginPath(); ctx.arc(cx + sx * 350, ty, 9, 0, Math.PI * 2); ctx.fill(); }
-  ctx.font = '76px "Amiri Quran"';
-  ctx.fillText(BASMALA, cx, ty + 2);
-  // bottom cartouche
-  const by = PH - 400;
-  ctx.beginPath();
-  ctx.moveTo(cx - 260, by);
-  ctx.quadraticCurveTo(cx - 260, by - 50, cx - 190, by - 50);
-  ctx.lineTo(cx + 190, by - 50);
-  ctx.quadraticCurveTo(cx + 260, by - 50, cx + 260, by);
-  ctx.quadraticCurveTo(cx + 260, by + 50, cx + 190, by + 50);
-  ctx.lineTo(cx - 190, by + 50);
-  ctx.quadraticCurveTo(cx - 260, by + 50, cx - 260, by);
-  ctx.closePath(); ctx.stroke();
-  ctx.font = 'bold 54px "Amiri"';
-  ctx.fillText('بِٱلرَّسْمِ ٱلْعُثْمَانِيِّ', cx, by + 2);
+  tracePoints(ctx, panel);
+  ctx.stroke();
+  const R = 232;
+  ctx.lineWidth = 8; ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.stroke();
+  ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(cx, cy, R - 16, 0, Math.PI * 2); ctx.stroke();
+
+  // the title inside the medallion
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.direction = 'rtl';
+  const fit = (text, size, maxW) => {
+    ctx.font = `bold ${size}px "Amiri"`;
+    const w = ctx.measureText(text).width;
+    if (w > maxW) ctx.font = `bold ${Math.floor((size * maxW) / w)}px "Amiri"`;
+  };
+  // unvowelled, as a title is set on a binding
+  fit('القرآن', 168, 340);
+  ctx.fillText('القرآن', cx, cy - 62);
+  fit('الكريم', 168, 340);
+  ctx.fillText('الكريم', cx, cy + 92);
   ctx.restore();
 }
 
-/**
- * Cover material maps: colour, bump (emboss) and a packed roughness (G) / metalness (B) map.
- */
-export function renderCoverMaps() {
-  const orn = makeCanvas();
-  drawCoverOrnament(orn.getContext('2d'));
+let coverOrnament = null;
+const ornament = () => {
+  if (!coverOrnament) { coverOrnament = makeCanvas(); drawCoverOrnament(coverOrnament.getContext('2d')); }
+  return coverOrnament;
+};
 
-  // colour
+/** The cover's colour map: leather in `base`, gold tooling on top. */
+export function renderCoverColor(base) {
+  const orn = ornament();
   const color = makeCanvas();
   const cc = color.getContext('2d');
-  leatherGrain(cc, PW, PH, '#0f3a29', 1);
+  leatherGrain(cc, PW, PH, base, 1);
   const vign = cc.createRadialGradient(PW / 2, PH / 2, PH * 0.25, PW / 2, PH / 2, PH * 0.8);
   vign.addColorStop(0, 'rgba(255,255,255,0.05)');
   vign.addColorStop(1, 'rgba(0,0,0,0.38)');
@@ -827,8 +853,12 @@ export function renderCoverMaps() {
   gc.globalCompositeOperation = 'destination-in';
   gc.drawImage(orn, 0, 0);
   cc.drawImage(gold, 0, 0);
+  return color;
+}
 
-  // bump: leather grain + raised tooling
+/** The cover's relief, the same in every theme: bump (grain + raised tooling) and packed roughness (G) / metalness (B). */
+export function renderCoverRelief() {
+  const orn = ornament();
   const bump = makeCanvas();
   const bc = bump.getContext('2d');
   leatherGrain(bc, PW, PH, '#808080', 1.6);
@@ -836,7 +866,6 @@ export function renderCoverMaps() {
   bc.drawImage(orn, 0, 0);
   bc.filter = 'none';
 
-  // roughness (G) / metalness (B)
   const orm = makeCanvas();
   const oc = orm.getContext('2d');
   oc.fillStyle = 'rgb(0,190,0)'; oc.fillRect(0, 0, PW, PH); // leather: rough, non-metal
@@ -846,17 +875,19 @@ export function renderCoverMaps() {
   goc.globalCompositeOperation = 'destination-in';
   goc.drawImage(orn, 0, 0);
   oc.drawImage(goldOrm, 0, 0);
-
-  return { color, bump, orm };
+  return { bump, orm };
 }
 
-/** Plain leather (spine, back cover). Returns {color, bump}. */
-export function renderLeatherMaps() {
+/** Plain leather (spine, back cover) in `base`. */
+export function renderLeatherColor(base) {
   const color = makeCanvas(512, 512);
-  leatherGrain(color.getContext('2d'), 512, 512, '#0f3a29', 1);
+  leatherGrain(color.getContext('2d'), 512, 512, base, 1);
+  return color;
+}
+export function renderLeatherBump() {
   const bump = makeCanvas(512, 512);
   leatherGrain(bump.getContext('2d'), 512, 512, '#808080', 1.6);
-  return { color, bump };
+  return bump;
 }
 
 export function renderInsideCover() {
@@ -871,7 +902,7 @@ export function renderInsideCover() {
   // marbled endpaper: soft veins
   ctx.lineWidth = 1.2;
   for (let i = 0; i < 260; i++) {
-    ctx.strokeStyle = `rgba(${Math.random() < 0.5 ? '22,74,52' : '150,110,50'},${0.08 + Math.random() * 0.12})`;
+    ctx.strokeStyle = `rgba(${Math.random() < 0.5 ? '31,58,107' : '150,110,50'},${0.08 + Math.random() * 0.12})`;
     ctx.beginPath();
     let x = Math.random() * PW, y = Math.random() * PH;
     ctx.moveTo(x, y);

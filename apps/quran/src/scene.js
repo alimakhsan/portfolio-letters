@@ -42,7 +42,8 @@ export function createScene(canvas) {
   const UP_DESK = new THREE.Vector3(0, 1, 0), UP_TOP = new THREE.Vector3(0, 0, -1);
   const TOP_FOV = 26;
   const deskFov = (aspect) => (aspect < 0.9 ? 60 : aspect < 1.3 ? 48 : 38);
-  const deskPos = (aspect) => (aspect < 0.8 ? new THREE.Vector3(0.03, 2.5, 2.7) : aspect < 1.2 ? new THREE.Vector3(0.04, 2.0, 2.45) : new THREE.Vector3(0.05, 1.75, 2.15));
+  // 55° down on every screen: the view lands on the table top only, never the room past its far edge
+  const deskPos = (aspect) => (aspect < 0.8 ? new THREE.Vector3(0.03, 3.07, 2.06) : aspect < 1.2 ? new THREE.Vector3(0.04, 2.65, 1.76) : new THREE.Vector3(0.05, 2.33, 1.54));
   const DESK_TARGET = new THREE.Vector3(0, 0.02, -0.08);
   camera.position.copy(deskPos(window.innerWidth / Math.max(1, window.innerHeight)));
   target.copy(DESK_TARGET);
@@ -52,10 +53,10 @@ export function createScene(canvas) {
   // ---------- desk ----------
   // Only the table top the mushaf rests on; the room around it is left to the background colour.
   const tableTex = woodTexture({ base: '#7b5433', dark: '#4a2f17', light: '#a2743f' });
-  tableTex.repeat.set(3.5, 2.4);
-  // deep enough to fill a portrait screen below the page now that there is no floor behind it
-  const top = new THREE.Mesh(new THREE.BoxGeometry(5.2, 0.07, 4.2), new THREE.MeshStandardMaterial({ map: tableTex, roughness: 0.42, metalness: 0.03 }));
-  top.position.set(0, -0.035, 0.3);
+  tableTex.repeat.set(6.06, 4.34);
+  // wide and deep enough that the desk view, on any screen shape, sees nothing but the table
+  const top = new THREE.Mesh(new THREE.BoxGeometry(9, 0.07, 7.6), new THREE.MeshStandardMaterial({ map: tableTex, roughness: 0.42, metalness: 0.03 }));
+  top.position.set(0, -0.035, -1.4);
   top.receiveShadow = true;
 
   // where the window and the table lamp stood: their light stays, their bodies are not drawn

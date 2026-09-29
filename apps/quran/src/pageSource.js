@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { renderPage, renderCoverMaps, renderLeatherMaps, renderInsideCover, renderBlank, loadQcf } from './pageRenderer.js';
+import { renderPage, renderCoverColor, renderCoverRelief, renderLeatherColor, renderLeatherBump, COVER_LEATHER, renderInsideCover, renderBlank, loadQcf } from './pageRenderer.js';
 import { getPage, getChapters, TOTAL_PAGES } from './quranApi.js';
 import { IS_MOBILE } from './scene.js';
 
@@ -14,6 +14,7 @@ export class PageSource {
     this.pending = new Map();
     this.specials = {};
     this.script = 'uthmani';
+    this.night = false;   // the binding is blue by day, black by night
   }
 
   setScript(script) { this.script = script; }
@@ -49,30 +50,27 @@ export class PageSource {
     return out;
   }
 
-  /** Front cover maps (embossed leather with gold tooling). */
+  /** Front cover maps (embossed leather with gold tooling) for the current theme. */
   coverMaps() {
-    if (!this.specials.cover) {
-      const { color, bump, orm } = renderCoverMaps();
+    const theme = this.night ? 'night' : 'day';
+    if (!this.specials.coverRelief) {
+      const { bump, orm } = renderCoverRelief();
       const ormTex = this._tex(orm, false);
-      this.specials.cover = {
-        map: this._tex(color),
-        bumpMap: this._tex(bump, false),
-        roughnessMap: ormTex,
-        metalnessMap: ormTex,
-      };
+      this.specials.coverRelief = { bumpMap: this._tex(bump, false), roughnessMap: ormTex, metalnessMap: ormTex };
     }
-    return this.specials.cover;
+    const key = `cover-${theme}`;
+    this.specials[key] ??= { ...this.specials.coverRelief, map: this._tex(renderCoverColor(COVER_LEATHER[theme])) };
+    return this.specials[key];
   }
 
-  /** Tiling leather for spine and back cover. */
+  /** Tiling leather for spine and back cover, for the current theme. */
   leatherMaps() {
-    if (!this.specials.leather) {
-      const { color, bump } = renderLeatherMaps();
-      const map = this._tex(color), bumpMap = this._tex(bump, false);
-      for (const t of [map, bumpMap]) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(2, 3); }
-      this.specials.leather = { map, bumpMap };
-    }
-    return this.specials.leather;
+    const theme = this.night ? 'night' : 'day';
+    const tile = (t) => { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(2, 3); return t; };
+    this.specials.leatherBump ??= tile(this._tex(renderLeatherBump(), false));
+    const key = `leather-${theme}`;
+    this.specials[key] ??= { map: tile(this._tex(renderLeatherColor(COVER_LEATHER[theme]))), bumpMap: this.specials.leatherBump };
+    return this.specials[key];
   }
 
   special(kind) {

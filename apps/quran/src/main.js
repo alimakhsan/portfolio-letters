@@ -108,18 +108,24 @@ function setFocus(side, dur = 0.7) {
 }
 
 // ---------- boot ----------
+// Each loading step stays up long enough to be read; the work behind it runs at full speed regardless.
+const STEP_MIN = 700;   // ms
+let steps = new Promise((r) => setTimeout(r, STEP_MIN));   // the first line comes with the page
+function loadingStep(text) {
+  steps = steps.then(() => { ui.loadingText.textContent = text; return new Promise((r) => setTimeout(r, STEP_MIN)); });
+}
 async function init() {
   view.resize();
   single = isSingle();
   setPageScale(idealPageScale());
   view.showDesk(0);
   try {
-    ui.loadingText.textContent = 'Loading fonts…';
+    loadingStep('Loading fonts…');
     await ensureFonts();
-    ui.loadingText.textContent = 'Loading surah index…';
+    loadingStep('Loading surah index…');
     chapters = await getChapters();
     buildNavigator();
-    ui.loadingText.textContent = 'Binding the mushaf…';
+    loadingStep('Binding the mushaf…');
     book = new Book(source);
     scene.add(book.group);
     book.onFlipStart = onFlipStart;
@@ -129,6 +135,7 @@ async function init() {
     book.onChange = () => view.invalidate();
     book.layoutStatic();
     await book.applyTextures();
+    await steps;
     ui.loading.classList.add('done');
     setTimeout(() => (ui.loading.hidden = true), 650);
     // only the spread the book will open on is typeset ahead; nothing else until it is read
@@ -136,6 +143,7 @@ async function init() {
     source.prefetch([2 * f - 3, 2 * f - 2]);
   } catch (e) {
     console.error(e);
+    await steps;
     ui.loadingText.textContent = 'Could not reach the Qur’an API. Check your connection and reload.';
   }
 }
@@ -706,6 +714,8 @@ function markGroup(group, attr, value) {
 }
 function setNight(on) {
   view.setNight(on);
+  source.night = on;
+  book?.applyTheme();
   const style = document.createElement('style');
   style.textContent = '*,*::before,*::after{transition:none !important}';
   document.head.appendChild(style);
@@ -902,10 +912,12 @@ canvas.addEventListener('pointermove', (e) => {
     hoverPending = false;
     if (down || !book || book.animating) { canvas.style.cursor = ''; return; }
     const p = pickAt(e);
+    pageUi.hover(reading() && p && !p.cover ? p.side : null);
     const c = classify(p);
     canvas.style.cursor = c.kind === 'none' ? '' : (c.kind === 'next' || c.kind === 'prev') && grabDirection(p) ? 'grab' : 'pointer';
   });
 });
+canvas.addEventListener('pointerleave', () => pageUi.hover(null));
 
 // ---------- keys ----------
 window.addEventListener('keydown', (e) => {
