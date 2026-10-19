@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Only the released case studies are listed; the rest of /case-studies
-     still redirects to the home page while it is being rewritten. -->
+<!-- Only the case-study index and released studies are listed; the rest of
+     /case-studies still redirects to the home page while it is being rewritten. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://ahmadalim.com/</loc>
     <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://ahmadalim.com/case-studies</loc>
+    <lastmod>2026-10-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://ahmadalim.com/case-studies/offline-mode</loc>

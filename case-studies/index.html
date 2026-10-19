@@ -56,12 +56,14 @@
           <p class="lede">Each one covers the problem, the calls I made, and the numbers they moved. More are on the way.</p>
         </div>
 
-        <!-- Thumbnails are placeholders for now: drop a real screenshot into
-             /assets/work/ and swap the src, nothing else needs to change. -->
+        <!-- Released studies are links with a real screenshot. Studies still
+             being written are locked cards (no link, "Drafting..." tooltip):
+             to release one, turn it back into an <a> and allow its path in
+             _redirects. -->
         <div class="work-grid">
           <a class="work-card" href="/case-studies/offline-mode">
-            <div class="work-thumb is-placeholder">
-              <img src="/assets/work/placeholder.svg" alt="" width="800" height="500" loading="lazy">
+            <div class="work-thumb">
+              <img src="/assets/case/offline-mode-flow.jpg" alt="" width="1600" height="900" loading="lazy">
             </div>
             <div>
               <div class="work-nm">Onstock</div>
@@ -70,8 +72,8 @@
           </a>
 
           <a class="work-card" href="/case-studies/mitra-plus">
-            <div class="work-thumb is-placeholder">
-              <img src="/assets/work/placeholder.svg" alt="" width="800" height="500" loading="lazy">
+            <div class="work-thumb">
+              <img src="/assets/case/mitra-hero.jpg" alt="" width="1600" height="873" loading="lazy">
             </div>
             <div>
               <div class="work-nm">Mitra Plus+</div>
@@ -79,25 +81,27 @@
             </div>
           </a>
 
-          <a class="work-card" href="/case-studies/smartsari">
+          <div class="work-card is-locked" tabindex="0" aria-disabled="true" data-tooltip="Drafting...">
             <div class="work-thumb is-placeholder">
               <img src="/assets/work/placeholder.svg" alt="" width="800" height="500" loading="lazy">
+              <svg class="work-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
             </div>
             <div>
-              <div class="work-nm">SmartSari</div>
+              <div class="work-nm">SmartSari <span class="sr-only">(drafting, not yet available)</span></div>
               <div class="work-desc">0→1 into the Philippines, $144K in month one</div>
             </div>
-          </a>
+          </div>
 
-          <a class="work-card" href="/case-studies/leadership">
+          <div class="work-card is-locked" tabindex="0" aria-disabled="true" data-tooltip="Drafting...">
             <div class="work-thumb is-placeholder">
               <img src="/assets/work/placeholder.svg" alt="" width="800" height="500" loading="lazy">
+              <svg class="work-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
             </div>
             <div>
-              <div class="work-nm">Design leadership</div>
+              <div class="work-nm">Design leadership <span class="sr-only">(drafting, not yet available)</span></div>
               <div class="work-desc">Mentoring designers and the systems behind them</div>
             </div>
-          </a>
+          </div>
         </div>
 
         <div class="footer">

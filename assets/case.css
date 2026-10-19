@@ -425,6 +425,34 @@ html[data-theme="dark"] .sheet::before { mix-blend-mode: screen; opacity: .15; }
   font-size: 12px; font-weight: 600; letter-spacing: 0.1em;
   text-transform: uppercase; color: var(--muted);
 }
+/* locked: a study still being written. Not a link; hover or focus shows the
+   "Drafting..." tooltip from data-tooltip. */
+.work-card.is-locked { position: relative; cursor: not-allowed; }
+/* the lock replaces the placeholder art, so the two icons never overlap */
+.work-card.is-locked .work-thumb img { display: none; }
+.work-card.is-locked:hover .work-thumb { border-color: var(--border); }
+.work-card.is-locked:hover .work-nm { color: var(--text); }
+.work-card.is-locked .work-nm,
+.work-card.is-locked .work-desc { opacity: .7; }
+.work-card.is-locked:focus-visible .work-thumb { outline: 2px solid var(--muted); outline-offset: 3px; }
+.work-lock {
+  position: absolute; top: 50%; left: 50%; width: 26px; height: 26px;
+  transform: translate(-50%, -50%); color: var(--muted);
+}
+.work-card.is-locked::after {
+  content: attr(data-tooltip);
+  position: absolute; top: 12px; left: 50%;
+  transform: translate(-50%, 4px);
+  padding: 6px 10px; border-radius: 6px;
+  font-size: 13px; font-weight: 500; line-height: 1.2; white-space: nowrap;
+  color: var(--paper); background: var(--text);
+  opacity: 0; pointer-events: none;
+  transition: opacity .15s, transform .15s;
+}
+.work-card.is-locked:hover::after,
+.work-card.is-locked:focus-visible::after {
+  opacity: 1; transform: translate(-50%, 0);
+}
 @media (prefers-reduced-motion: reduce) {
   .work-thumb img { transition: none; }
   .work-card:hover .work-thumb img { transform: none; }

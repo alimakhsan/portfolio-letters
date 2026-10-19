@@ -1,13 +1,14 @@
 # Case studies are being rewritten. The pages stay in the repo but the path is
-# closed for now: both /work and anything under /case-studies land on the home
+# closed for now: any unreleased study under /case-studies lands on the home
 # page. 302 (not 301) so browsers don't cache this once the rewrite ships.
-# Two pages are released ahead of the rewrite. Netlify stops at the first
-# matching rule, so they must sit above the closing rules.
+# The index and two studies are released ahead of the rewrite (the index
+# shows the rest as locked). Netlify stops at the first matching rule, so
+# they must sit above the closing rule.
+/case-studies               /case-studies/index.html               200!
 /case-studies/offline-mode  /case-studies/offline-mode/index.html  200!
 /case-studies/mitra-plus    /case-studies/mitra-plus/index.html    200!
 
-/work            /                                                                  302
-/case-studies    /                                                                  302!
+/work            /case-studies                                                      302
 /case-studies/*  /                                                                  302!
 
 # Vanity shortcuts → easy to share/print on a CV
