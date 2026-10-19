@@ -56,14 +56,17 @@
           <p class="lede">Each one covers the problem, the calls I made, and the numbers they moved. More are on the way.</p>
         </div>
 
-        <!-- Released studies are links with a real screenshot. Studies still
-             being written are locked cards (no link, "Drafting..." tooltip):
-             to release one, turn it back into an <a> and allow its path in
-             _redirects. -->
+        <!-- Each thumb is a folder: back panel, a sheet holding the screenshot,
+             and a front flap that opens on hover. Studies still being written
+             are locked cards (no link, no sheet, "Drafting..." tooltip): to
+             release one, turn it back into an <a>, add a .folder-sheet with
+             its screenshot, and allow its path in _redirects. -->
         <div class="work-grid">
           <a class="work-card" href="/case-studies/offline-mode">
             <div class="work-thumb">
-              <img src="/assets/case/offline-mode-flow.jpg" alt="" width="1600" height="900" loading="lazy">
+              <span class="folder-back" aria-hidden="true"></span>
+              <span class="folder-sheet"><img src="/assets/case/offline-mode-flow.jpg" alt="" width="1600" height="900" loading="lazy"></span>
+              <span class="folder-front" aria-hidden="true"></span>
             </div>
             <div>
               <div class="work-nm">Onstock</div>
@@ -73,7 +76,9 @@
 
           <a class="work-card" href="/case-studies/mitra-plus">
             <div class="work-thumb">
-              <img src="/assets/case/mitra-hero.jpg" alt="" width="1600" height="873" loading="lazy">
+              <span class="folder-back" aria-hidden="true"></span>
+              <span class="folder-sheet"><img src="/assets/case/mitra-hero.jpg" alt="" width="1600" height="873" loading="lazy"></span>
+              <span class="folder-front" aria-hidden="true"></span>
             </div>
             <div>
               <div class="work-nm">Mitra Plus+</div>
@@ -82,9 +87,9 @@
           </a>
 
           <div class="work-card is-locked" tabindex="0" aria-disabled="true" data-tooltip="Drafting...">
-            <div class="work-thumb is-placeholder">
-              <img src="/assets/work/placeholder.svg" alt="" width="800" height="500" loading="lazy">
-              <svg class="work-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+            <div class="work-thumb">
+              <span class="folder-back" aria-hidden="true"></span>
+              <span class="folder-front" aria-hidden="true"><svg class="work-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
             </div>
             <div>
               <div class="work-nm">SmartSari <span class="sr-only">(drafting, not yet available)</span></div>
@@ -93,9 +98,9 @@
           </div>
 
           <div class="work-card is-locked" tabindex="0" aria-disabled="true" data-tooltip="Drafting...">
-            <div class="work-thumb is-placeholder">
-              <img src="/assets/work/placeholder.svg" alt="" width="800" height="500" loading="lazy">
-              <svg class="work-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+            <div class="work-thumb">
+              <span class="folder-back" aria-hidden="true"></span>
+              <span class="folder-front" aria-hidden="true"><svg class="work-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
             </div>
             <div>
               <div class="work-nm">Design leadership <span class="sr-only">(drafting, not yet available)</span></div>
